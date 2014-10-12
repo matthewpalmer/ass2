@@ -51,7 +51,7 @@ sub browse_screen {
 #
 sub page_header {
 	return header,
-   		start_html("-title"=>"LOVE2041", -style=>{'src'=>$styles_file}),
+   		start_html("-title"=>"LOVE2041", -style=>{'src'=>"styles.css"}),
  		center(h1("LOVE2041"));
 }
 
