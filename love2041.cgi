@@ -16,11 +16,16 @@ print page_header();
 # some globals used through the script
 $debug = 1;
 $students_dir = "./students/students";
-$styles_file = "styles.css";
 
-print browse_screen();
+display_profile("AwesomeAngel57");
 print page_trailer();
 exit 0;
+
+sub display_profile {
+	my $username = shift;
+	my $html = profile_html($username);
+	print $html;
+}
 
 sub browse_screen {
 	my $n = param('n') || 0;
@@ -80,11 +85,11 @@ sub image_html($) {
 #
 # HTML for the person's profile
 #
-sub profile_html {
+sub profile_html($) {
 	# Username
-	# Profile photo URL
-	my $image_url =
+	my $username = shift;
 
+	# Profile photo URL
 	# Degree
 	# Birthdate
 	# Favourite Books
@@ -97,7 +102,7 @@ sub profile_html {
 	$html .= "<h2>" . $username . "</h2>";
 
 	# Display the profile photo if they have one.
-	if (-e $image_url) {
+	if (-e profilePhotoURL($username)) {
 		$html .= image_html(profilePhotoURL($username));
 	}
 
