@@ -16,6 +16,7 @@ print page_header();
 # some globals used through the script
 $debug = 1;
 $students_dir = "./students/students";
+$styles_file = "styles/styles.css";
 
 print browse_screen();
 print page_trailer();
@@ -50,7 +51,7 @@ sub browse_screen {
 #
 sub page_header {
 	return header,
-   		start_html("-title"=>"LOVE2041", -style=>{'src'=>'./styles/styles.css'}),
+   		start_html("-title"=>"LOVE2041", -style=>{'src'=>$styles_file}),
  		center(h1("LOVE2041"));
 }
 
