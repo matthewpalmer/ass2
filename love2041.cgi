@@ -15,7 +15,7 @@ print page_header();
 
 # some globals used through the script
 $debug = 1;
-$students_dir = "./students";
+$students_dir = "./students/students";
 
 print browse_screen();
 print page_trailer();
