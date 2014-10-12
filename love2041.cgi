@@ -6,7 +6,7 @@
 
 use CGI qw/:all/;
 use CGI::Carp qw(fatalsToBrowser warningsToBrowser);
-use Data::Dumper;  
+use Data::Dumper;
 use List::Util qw/min max/;
 warningsToBrowser(1);
 
@@ -19,7 +19,7 @@ $students_dir = "./students/students";
 
 print browse_screen();
 print page_trailer();
-exit 0;	
+exit 0;
 
 sub browse_screen {
 	my $n = param('n') || 0;
@@ -31,7 +31,7 @@ sub browse_screen {
 	open my $p, "$profile_filename" or die "can not open $profile_filename: $!";
 	$profile = join '', <$p>;
 	close $p;
-	
+
 	return p,
 		start_form, "\n",
 		pre($profile),"\n",
@@ -42,12 +42,16 @@ sub browse_screen {
 }
 
 #
-# HTML placed at bottom of every screen
+# HTML production
+# ===============
+
+#
+# HTML placed at top of every screen
 #
 sub page_header {
 	return header,
-   		start_html("-title"=>"LOVE2041", -bgcolor=>"#FEDCBA"),
- 		center(h2(i("LOVE2041")));
+   		start_html("-title"=>"LOVE2041", -style=>{'src'=>'./styles/styles.css'}),
+ 		center(h1("LOVE2041"));
 }
 
 #
@@ -60,4 +64,245 @@ sub page_trailer {
 	$html .= join("", map("<!-- $_=".param($_)." -->\n", param())) if $debug;
 	$html .= end_html;
 	return $html;
+}
+
+#
+# HTML for images
+# Takes an image URL as the only parameter
+#
+sub image_html($) {
+	my $url = shift @_;
+	my $html = "<img src = '" . $url . "'/>";
+	return $html;
+}
+
+#
+# HTML for the person's profile
+#
+sub profile_html {
+	# Username
+	# Profile photo URL
+	my $image_url =
+
+	# Degree
+	# Birthdate
+	# Favourite Books
+	#   TV Shows
+	#   Bands
+	#   Movies
+	# Weight
+	# Hair Color
+ 	my $html = "<div class = 'profile'>";
+	$html .= "<h2>" . $username . "</h2>";
+
+	# Display the profile photo if they have one.
+	if (-e $image_url) {
+		$html .= image_html(profilePhotoURL($username));
+	}
+
+	# Display the degree
+	$html .= degree_html(degrees($username));
+
+	# Display favorite books, movies, tv shows, bands, hobbies, etc.
+	# ...
+
+	# Display physical attributes
+	# - hair color
+	# - weight
+	# - age
+	# - height
+	$html .= hair_color_html(hairColor($username));
+	$html .= weight_html(weight($username));
+	$html .= age_html(age($username));
+	$html .= height_html(height($username));
+
+
+	$html .= "</div>";
+}
+
+#
+# HTML for the person's favourite X sections
+# Takes the type of preference (TV, Book, etc.) and a list of preferences
+#
+sub preferences_html($@) {
+	my $type = shift;
+	my $html = "<h3>" . $type . "</h3><ul>";
+
+	foreach (@_) {
+		$html .= "<li>" . $_ . "</li>";
+	}
+
+	$html .= "</ul>";
+}
+
+#
+# HTML to display the user's degree(s?)
+# Takes a list of degrees
+#
+sub degree_html(@) {
+	my $html = "<h4>"
+
+	$html .= $_ . ". " foreach (@_);
+
+	$html .= "</h4>";
+	return $html;
+}
+
+#
+# HTML to display generic attributes consistently
+# Takes the kind of attribute, and the value
+#
+sub attribute_html($$) {
+	my $type = shift;
+	my $value = shift;
+	my $html = "<strong>" . $type . "</strong>: ";
+	$html .= $value . "<br/>";
+	return $html;
+}
+
+#
+# HTML to display the user's hair color
+# Takes the hair color
+#
+sub hair_color_html($) {
+	my $hairColorKey = "Hair color";
+	return attribute_html($hairColorKey, $_);
+}
+
+#
+# HTML to display the user's height
+# Takes the height
+#
+sub height_html($) {
+	my $heightKey = "Height";
+	return attribute_html($heightKey, $_);
+}
+
+#
+# HTML to display the user's weight
+# Takes the weight
+#
+sub weight_html($) {
+	my $weightKey = "Weight";
+	return attribute_html($weightKey, $_);
+}
+
+#
+# HTML to display the user's age
+# Takes the age
+#
+sub age_html($) {
+	my $ageKey = "Age";
+	return attribute_html($ageKey, $_);
+}
+
+#
+# Data Access
+# ===========
+
+#
+# The user's profile photo URL
+#
+sub profilePhotoURL($) {
+ 	my $username = shift;
+	my $profilePhotoURL = $students_dir . "/" . $username . "profile.jpg";
+	return $profilePhotoURL;
+}
+
+#
+# A list of the user's other photos
+#
+sub otherPhotos($) {
+	my $username = shift;
+	my @photos = ();
+	# ...
+	return @photos;
+}
+
+#
+# A list of the user's degrees
+#
+sub degrees($) {
+	my $username = shift;
+	my @degrees = ();
+	# ...
+	return @degrees;
+}
+
+#
+# The user's hair color
+#
+sub hairColor($) {
+	my $username = shift;
+	my $hairColor = "something?";
+	return $hairColor;
+}
+
+#
+# The user's height
+#
+sub height($) {
+	my $username = shift;
+	my $height = "something?";
+	return $height;
+}
+
+#
+# The user's weight
+#
+sub weight($) {
+	my $username = shift;
+	my $weight = "something?";
+	return $weight;
+}
+
+#
+# The user's age
+#
+sub age($) {
+	my $username = shift;
+	my $age = "something?";
+	return $age;
+}
+
+#
+# A list of the user's favourite books
+#
+sub favoriteBooks($) {
+	my @books = ();
+	# ...
+	return @books;
+}
+
+
+#
+# A list of the user's favourite bands
+#
+sub favoriteBands($) {
+	my @bands = ();
+	return @bands;
+}
+
+#
+# A list of the user's favourite tv shows
+#
+sub favouriteTVShows($) {
+	my @shows = ();
+	return @shows;
+}
+
+#
+# A list of the user's favourite hobbies
+#
+sub favoriteHobbies($) {
+	my @hobbies = ();
+	return @hobbies;
+}
+
+#
+# A list of the user's favourite movies
+#
+sub favoriteMovies($) {
+	my @movies = ();
+	return @movies;
 }
