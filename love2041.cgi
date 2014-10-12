@@ -155,9 +155,11 @@ sub degree_html(@) {
 sub attribute_html($$) {
 	my $type = shift;
 	my $value = shift;
-	my $html = "<strong>" . $type . "</strong>: ";
-	$html .= $value . "<br/>";
-	return $html;
+	if (defined $type && defined $value) {
+		my $html = "<strong>" . $type . "</strong>: ";
+		$html .= $value . "<br/>";
+		return $html;
+	}
 }
 
 #
@@ -166,7 +168,7 @@ sub attribute_html($$) {
 #
 sub hair_color_html($) {
 	my $hairColorKey = "Hair color";
-	return attribute_html($hairColorKey, $_);
+	return attribute_html($hairColorKey, $_) if defined $_;
 }
 
 #
@@ -175,7 +177,7 @@ sub hair_color_html($) {
 #
 sub height_html($) {
 	my $heightKey = "Height";
-	return attribute_html($heightKey, $_);
+	return attribute_html($heightKey, $_) if defined $_;
 }
 
 #
@@ -184,7 +186,7 @@ sub height_html($) {
 #
 sub weight_html($) {
 	my $weightKey = "Weight";
-	return attribute_html($weightKey, $_);
+	return attribute_html($weightKey, $_) if defined $_;
 }
 
 #
@@ -193,7 +195,7 @@ sub weight_html($) {
 #
 sub age_html($) {
 	my $ageKey = "Age";
-	return attribute_html($ageKey, $_);
+	return attribute_html($ageKey, $_) if defined $_;
 }
 
 #
