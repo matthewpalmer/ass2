@@ -16,7 +16,7 @@ print page_header();
 # some globals used through the script
 $debug = 1;
 $students_dir = "./students/students";
-$styles_file = "styles/styles.css";
+$styles_file = "styles.css";
 
 print browse_screen();
 print page_trailer();
