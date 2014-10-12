@@ -140,7 +140,7 @@ sub preferences_html($@) {
 # Takes a list of degrees
 #
 sub degree_html(@) {
-	my $html = "<h4>"
+	my $html = "<h4>";
 
 	$html .= $_ . ". " foreach (@_);
 
