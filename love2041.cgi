@@ -78,7 +78,7 @@ sub page_trailer {
 #
 sub image_html($) {
 	my $url = shift @_;
-	my $html = "<img src = '" . $url . "'/>";
+	my $html = img({src=>$url});
 	return $html;
 }
 
@@ -98,8 +98,9 @@ sub profile_html($) {
 	#   Movies
 	# Weight
 	# Hair Color
+
  	my $html = "<div class = 'profile'>";
-	$html .= "<h2>" . $username . "</h2>";
+	$html .=  h2($username);
 
 	# Display the profile photo if they have one.
 	if (-e profilePhotoURL($username)) {
@@ -122,8 +123,8 @@ sub profile_html($) {
 	$html .= age_html(age($username));
 	$html .= height_html(height($username));
 
-
 	$html .= "</div>";
+	return $html;
 }
 
 #
@@ -132,13 +133,9 @@ sub profile_html($) {
 #
 sub preferences_html($@) {
 	my $type = shift;
-	my $html = "<h3>" . $type . "</h3><ul>";
-
-	foreach (@_) {
-		$html .= "<li>" . $_ . "</li>";
-	}
-
-	$html .= "</ul>";
+	my $html = h3($type);
+	$html .= ul(li(@_));
+	return $html;
 }
 
 #
@@ -146,11 +143,8 @@ sub preferences_html($@) {
 # Takes a list of degrees
 #
 sub degree_html(@) {
-	my $html = "<h4>";
-
-	$html .= $_ . ". " foreach (@_);
-
-	$html .= "</h4>";
+	my $html = "";
+	$html .= h4($_) . ". " foreach @_;
 	return $html;
 }
 
@@ -162,7 +156,8 @@ sub attribute_html($$) {
 	my $type = shift;
 	my $value = shift;
 	if (defined $type && defined $value) {
-		my $html = "<strong>" . $type . "</strong>: ";
+		my $html = strong($type);
+		$html = "<br/>";
 		$html .= $value . "<br/>";
 		return $html;
 	}
