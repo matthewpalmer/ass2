@@ -4,6 +4,11 @@
 # as a starting point for COMP2041/9041 assignment 2
 # http://cgi.cse.unsw.edu.au/~cs2041/assignments/LOVE2041/
 
+use FindBin qw( $RealBin );
+use lib $RealBin;
+
+use ProfileImporter qw(loadHashes);
+
 use CGI qw/:all/;
 use CGI::Carp qw(fatalsToBrowser warningsToBrowser);
 use Data::Dumper;
@@ -16,6 +21,12 @@ print page_header();
 # some globals used through the script
 $debug = 1;
 $students_dir = "./students/students";
+
+my ($studentsRef, $preferencesRef) = loadHashes();
+my %studentsHash = %{$studentsRef};
+my %preferencesHash = %{$preferencesRef};
+
+printHashes();
 
 display_profile("AwesomeAngel57");
 print page_trailer();
@@ -308,4 +319,32 @@ sub favoriteHobbies($) {
 sub favoriteMovies($) {
 	my @movies = ();
 	return @movies;
+}
+
+
+sub printHashes {
+  foreach $key (keys %studentsHash) {
+    print $key, " => ", $studentsHash{$key}, "\n";
+
+    my %user = %{$studentsHash{$key}};
+    foreach $k (keys %user) {
+      if (ref($user{$k}) eq 'ARRAY') {
+          my @arr = @{$user{$k}};
+          print "    ", $k, " => ";
+          foreach $i (@arr) {
+            print $i, ", ";
+          }
+          print "\n";
+        } else {
+          print "    ", $k, " => ", $user{$k}, "\n";
+        }
+    }
+
+    print "\nPreferences\n";
+    my %preferences = %{$preferencesHash{$key}};
+    foreach $pref (keys %preferences) {
+      print "         ", $pref, " => ", $preferences{$pref}, "\n";
+    }
+    print "\n\n\n";
+  }
 }
