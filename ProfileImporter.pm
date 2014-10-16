@@ -50,7 +50,6 @@ sub loadHashes {
 
   # Load each student's information into the studentsHash
   foreach $student (@students) {
-    print "Getting $student...\n";
     $student =~ /\/([a-zA-Z_0-9]+)/;
     my $username = $1;
     my @photos = ();
@@ -240,7 +239,7 @@ sub password {
 }
 
 sub hairColor {
-  return singleAttribute("hair_color", @_);
+  return singleAttribute("hair_colour", @_);
 }
 
 sub email {

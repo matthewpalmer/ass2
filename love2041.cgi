@@ -26,9 +26,34 @@ my ($studentsRef, $preferencesRef) = loadHashes();
 my %studentsHash = %{$studentsRef};
 my %preferencesHash = %{$preferencesRef};
 
-printHashes();
+# Keys to access these hashes
+my $profilePhotoKey = "profile_photo";
+my $photosKey = "photos";
+my $realNameKey = "name";
+my $birthdateKey = "birthdate";
+my $heightKey = "height";
+my $genderKey = "gender";
+my $weightKey = "weight";
+my $passwordKey = "password";
+my $hairColorKey = "hair_color";
+my $emailKey = "email";
+my $degreeKey = "degree";
+my $bandsKey = "favourite_bands";
+my $moviesKey = "favourite_movies";
+my $tvShowsKey = "favourite_TV_shows";
+my $hobbiesKey = "favourite_hobbies";
+my $booksKey = "favourite_books";
+my $coursesKey = "courses";
 
-display_profile("AwesomeAngel57");
+# Preferences
+my $ageKey = "age";
+my $hairColorPrefKey = "hair_colours";
+my $minKey = "min";
+my $maxKey = "max";
+
+# printHashes();
+
+display_profile("AwesomeGenius60");
 print page_trailer();
 exit 0;
 
@@ -100,16 +125,6 @@ sub profile_html($) {
 	# Username
 	my $username = shift;
 
-	# Profile photo URL
-	# Degree
-	# Birthdate
-	# Favourite Books
-	#   TV Shows
-	#   Bands
-	#   Movies
-	# Weight
-	# Hair Color
-
  	my $html = "<div class = 'profile'>";
 	$html .=  h2($username);
 
@@ -121,20 +136,18 @@ sub profile_html($) {
 	# Display the degree
 	$html .= degree_html(degrees($username));
 
-	# Display favorite books, movies, tv shows, bands, hobbies, etc.
-	# ...
-
 	# Display physical attributes
-	# - hair color
-	# - weight
-	# - age
-	# - height
 	$html .= hair_color_html(hairColor($username));
 	$html .= weight_html(weight($username));
 	$html .= age_html(age($username));
 	$html .= height_html(height($username));
+	$html .= degree_html(degrees($username));
+
+	# Display favorite books, movies, tv shows, bands, hobbies, etc.
+	# ...
 
 	$html .= "</div>";
+
 	return $html;
 }
 
@@ -156,7 +169,7 @@ sub preferences_html($@) {
 sub degree_html(@) {
 	my $html = "";
 	$html .= h4($_) . ". " foreach @_;
-	return $html;
+	return $html . "\n";
 }
 
 #
@@ -167,9 +180,8 @@ sub attribute_html($$) {
 	my $type = shift;
 	my $value = shift;
 	if (defined $type && defined $value) {
-		my $html = strong($type);
-		$html = "<br/>";
-		$html .= $value . "<br/>";
+		my $html = strong($type). ": ";
+		$html .= $value . "<br/>\n";
 		return $html;
 	}
 }
@@ -180,7 +192,8 @@ sub attribute_html($$) {
 #
 sub hair_color_html($) {
 	my $hairColorKey = "Hair color";
-	return attribute_html($hairColorKey, $_) if defined $_;
+	my $value = shift;
+	return attribute_html($hairColorKey, $value);
 }
 
 #
@@ -189,7 +202,8 @@ sub hair_color_html($) {
 #
 sub height_html($) {
 	my $heightKey = "Height";
-	return attribute_html($heightKey, $_) if defined $_;
+	my $value = shift;
+	return attribute_html($heightKey, $value);
 }
 
 #
@@ -198,7 +212,8 @@ sub height_html($) {
 #
 sub weight_html($) {
 	my $weightKey = "Weight";
-	return attribute_html($weightKey, $_) if defined $_;
+	my $value = shift;
+	return attribute_html($weightKey, $value);
 }
 
 #
@@ -207,7 +222,14 @@ sub weight_html($) {
 #
 sub age_html($) {
 	my $ageKey = "Age";
-	return attribute_html($ageKey, $_) if defined $_;
+	my $value = shift;
+	return attribute_html($ageKey, $value);
+}
+
+sub gender_html($) {
+	my $genderKey = "Gender";
+	my $value = shift;
+	return attribute_html($genderKey, $value);
 }
 
 #
@@ -228,9 +250,9 @@ sub profilePhotoURL($) {
 #
 sub otherPhotos($) {
 	my $username = shift;
-	my @photos = ();
-	# ...
-	return @photos;
+	if (defined $studentsHash{$username}{$photosKey}) {
+		return @{$studentsHash{$username}{$photosKey}};
+	}
 }
 
 #
@@ -238,9 +260,7 @@ sub otherPhotos($) {
 #
 sub degrees($) {
 	my $username = shift;
-	my @degrees = ();
-	# ...
-	return @degrees;
+	return $studentsHash{$username}{$degreeKey};
 }
 
 #
@@ -248,7 +268,7 @@ sub degrees($) {
 #
 sub hairColor($) {
 	my $username = shift;
-	my $hairColor = "something?";
+	my $hairColor = $studentsHash{$username}{$hairColorKey};
 	return $hairColor;
 }
 
@@ -257,7 +277,7 @@ sub hairColor($) {
 #
 sub height($) {
 	my $username = shift;
-	my $height = "something?";
+	my $height = $studentsHash{$username}{$heightKey};
 	return $height;
 }
 
@@ -266,7 +286,7 @@ sub height($) {
 #
 sub weight($) {
 	my $username = shift;
-	my $weight = "something?";
+	my $weight = $studentsHash{$username}{$weightKey};
 	return $weight;
 }
 
@@ -275,17 +295,26 @@ sub weight($) {
 #
 sub age($) {
 	my $username = shift;
-	my $age = "something?";
+	my $age = $studentsHash{$username}{$ageKey};
 	return $age;
+}
+
+#
+# The user's gender
+#
+sub gender($) {
+	my $username = shift;
+	my $gender = $studentsHash{$username}{$genderKey};
+	return $gender;
 }
 
 #
 # A list of the user's favourite books
 #
 sub favoriteBooks($) {
-	my @books = ();
-	# ...
-	return @books;
+	if (defined $studentsHash{$username}{$booksKey}) {
+		return @{$studentsHash{$username}{$booksKey}}
+	}
 }
 
 
@@ -293,32 +322,36 @@ sub favoriteBooks($) {
 # A list of the user's favourite bands
 #
 sub favoriteBands($) {
-	my @bands = ();
-	return @bands;
+	if (defined $studentsHash{$username}{$bandsKey}) {
+		return @{$studentsHash{$username}{$bandsKey}}
+	}
 }
 
 #
 # A list of the user's favourite tv shows
 #
 sub favouriteTVShows($) {
-	my @shows = ();
-	return @shows;
+	if (defined $studentsHash{$username}{$tvShowsKey}) {
+		return @{$studentsHash{$username}{$tvShowsKey}}
+	}
 }
 
 #
 # A list of the user's favourite hobbies
 #
 sub favoriteHobbies($) {
-	my @hobbies = ();
-	return @hobbies;
+	if (defined $studentsHash{$username}{$hobbiesKey}) {
+		return @{$studentsHash{$username}{$hobbiesKey}}
+	}
 }
 
 #
 # A list of the user's favourite movies
 #
 sub favoriteMovies($) {
-	my @movies = ();
-	return @movies;
+	if (defined $studentsHash{$username}{$moviesKey}) {
+		return @{$studentsHash{$username}{$moviesKey}}
+	}
 }
 
 
