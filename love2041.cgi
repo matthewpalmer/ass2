@@ -162,10 +162,10 @@ sub preferences_html($@) {
 	my $type = shift;
 	my $html = h3($type) . "\n";
 
-	if (defined @_) {
+	if (@_) {
 		$html .= ul(li(\@_));
 	} else {
-		$html .= "They don't have any $type.", "\n";
+		$html .= "They don't have any $type." . "\n";
 	}
 
 	return $html . "\n";
