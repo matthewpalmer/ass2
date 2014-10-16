@@ -141,10 +141,13 @@ sub profile_html($) {
 	$html .= weight_html(weight($username));
 	$html .= age_html(age($username));
 	$html .= height_html(height($username));
-	$html .= degree_html(degrees($username));
 
 	# Display favorite books, movies, tv shows, bands, hobbies, etc.
-	# ...
+	$html .= hobbies_html(favourite_hobbies($username));
+	$html .= books_html(favourite_books($username));
+	$html .= tv_shows_html(favourite_TV_shows($username));
+	$html .= bands_html(favourite_bands($username));
+	$html .= movies_html(favourite_movies($username));
 
 	$html .= "</div>";
 
@@ -157,9 +160,35 @@ sub profile_html($) {
 #
 sub preferences_html($@) {
 	my $type = shift;
-	my $html = h3($type);
-	$html .= ul(li(@_));
-	return $html;
+	my $html = h3($type) . "\n";
+
+	if (defined @_) {
+		$html .= ul(li(\@_));
+	} else {
+		$html .= "They don't have any $type.", "\n";
+	}
+
+	return $html . "\n";
+}
+
+sub hobbies_html {
+	return preferences_html("Hobbies", @_);
+}
+
+sub books_html {
+	return preferences_html("Favourite books", @_);
+}
+
+sub movies_html {
+	return preferences_html("Favourite movies", @_);
+}
+
+sub tv_shows_html {
+	return preferences_html("Favourite TV shows", @_);
+}
+
+sub bands_html {
+	return preferences_html("Favourite bands", @_);
 }
 
 #
@@ -311,7 +340,8 @@ sub gender($) {
 #
 # A list of the user's favourite books
 #
-sub favoriteBooks($) {
+sub favourite_books($) {
+	my $username = shift;
 	if (defined $studentsHash{$username}{$booksKey}) {
 		return @{$studentsHash{$username}{$booksKey}}
 	}
@@ -321,7 +351,8 @@ sub favoriteBooks($) {
 #
 # A list of the user's favourite bands
 #
-sub favoriteBands($) {
+sub favourite_bands($) {
+	my $username = shift;
 	if (defined $studentsHash{$username}{$bandsKey}) {
 		return @{$studentsHash{$username}{$bandsKey}}
 	}
@@ -330,7 +361,8 @@ sub favoriteBands($) {
 #
 # A list of the user's favourite tv shows
 #
-sub favouriteTVShows($) {
+sub favourite_TV_shows($) {
+	my $username = shift;
 	if (defined $studentsHash{$username}{$tvShowsKey}) {
 		return @{$studentsHash{$username}{$tvShowsKey}}
 	}
@@ -339,7 +371,8 @@ sub favouriteTVShows($) {
 #
 # A list of the user's favourite hobbies
 #
-sub favoriteHobbies($) {
+sub favourite_hobbies($) {
+	my $username = shift;
 	if (defined $studentsHash{$username}{$hobbiesKey}) {
 		return @{$studentsHash{$username}{$hobbiesKey}}
 	}
@@ -348,7 +381,8 @@ sub favoriteHobbies($) {
 #
 # A list of the user's favourite movies
 #
-sub favoriteMovies($) {
+sub favourite_movies($) {
+	my $username = shift;
 	if (defined $studentsHash{$username}{$moviesKey}) {
 		return @{$studentsHash{$username}{$moviesKey}}
 	}
