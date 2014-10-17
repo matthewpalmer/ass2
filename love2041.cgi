@@ -27,6 +27,8 @@ my ($studentsRef, $preferencesRef) = loadHashes();
 my %studentsHash = %{$studentsRef};
 my %preferencesHash = %{$preferencesRef};
 
+print "Password: '", $studentsHash{"password"}{"AwesomeGenius60"}, "'<br/>\n";
+
 # Keys to access these hashes
 my $profilePhotoKey = "profile_photo";
 my $photosKey = "photos";
@@ -73,10 +75,6 @@ sub isLoggedIn {
 	my $username = param('username');
 	my $password = param('password');
 
-	foreach $k (keys %param) {
-		print $k, $param{$k}, "\n<br/>";
-	}
-
 	if (defined $username && defined $password) {
 		return isCorrectPassword($username, $password);
 	} else {
@@ -92,8 +90,11 @@ sub isCorrectPassword {
 	if (defined password($username)) {
 		print "password '$password' '", password($username), "'\n";
 		if ($password eq password($username)) {
+			print "<strong>Logged in...</strong><br/>\n";
 			return 1;
 		}
+	} else {
+		print "password not defined for '$username'\n";
 	}
 
 	print "Not logged in usernme '$username' password '$password'\n";
