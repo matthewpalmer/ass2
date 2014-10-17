@@ -73,7 +73,14 @@ sub search_results {
 	my $searchTerm = shift;
 	print p("Searching for '$searchTerm'...<br/>\n");
 	my @results = searchData($searchTerm);
-	return preferences_html($searchTerm, @results);
+	my $html = ul(li(\@_)) . "\n";
+	foreach $user (@results) {
+		$html .= h3($user) . "\n";
+		$html .= image_html(profilePhotoURL($user)) . "<br/>\n";
+		$html .= gender_html($user) . "\n";
+		$html .= age_html($user) . "\n";
+	}
+	return $html;
 }
 
 sub logged_in_header {
