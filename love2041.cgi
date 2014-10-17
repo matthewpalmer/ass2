@@ -56,7 +56,12 @@ my $maxKey = "max";
 
 if (isLoggedIn()) {
 	print logged_in_header();
-	print browse_screen();
+	my $searchTerm = searchPhrase();
+	if ($searchTerm) {
+		print search_results($searchTerm);
+	} else {
+		print browse_screen();
+	}
 } else {
 	print log_in_screen();
 }
@@ -64,8 +69,21 @@ if (isLoggedIn()) {
 print page_trailer();
 exit 0;
 
+sub search_results {
+	my $searchTerm = shift;
+	print "These are the search results for '$searchTerm'.\n";
+}
+
 sub logged_in_header {
 	return logout_button();
+}
+
+sub searchPhrase {
+	if (defined param('search')) {
+		return param('search');
+	}
+
+	return 0;
 }
 
 # Checks whether a user is logged in properly
@@ -116,10 +134,14 @@ sub browse_screen {
 	my $listOfProfiles = "";
 	my $stopLimit = $n + 10;
 
+	my $html =
+
 	if ($stopLimit > (keys %studentsHash)) {
 		return p("End of the road."),
+			start_form,
 			hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret"),
 			hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret");
+			end_form;
 	}
 
 	foreach $i ($n..$n+10) {
@@ -135,6 +157,14 @@ sub browse_screen {
 		hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret"),
 		end_form, "\n",
 		p, "\n";
+}
+
+#
+# Search box
+#
+sub searchField {
+	return start_form, "\n", textfield("search"), "\n",
+				 submit('Search'), "\n", end_form;
 }
 
 #
