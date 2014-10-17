@@ -88,7 +88,7 @@ sub isLoggedIn {
 sub isCorrectPassword {
 	my $username = shift;
 	my $password = shift;
-	print bands_html($username);
+	print bands_html($studentsHash{$username}{$bandsKey});
 	# if (password($username)) {
 		print "password '$password' '", get_password($username), "'\n";
 		if ($password eq get_password($username)) {
