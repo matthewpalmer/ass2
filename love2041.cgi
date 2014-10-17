@@ -85,7 +85,7 @@ sub isCorrectPassword {
 	my $username = shift;
 	my $password = shift;
 
-	if (password($username)) {
+	if (get_password($username)) {
 		if ($password eq get_password($username)) {
 			return 1;
 		}
