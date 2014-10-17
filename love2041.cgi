@@ -198,9 +198,9 @@ sub page_trailer {
 	$html .= "<script>";
 	$html .= scripts();
 	$html .= "</script>";
-	hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret"),
-	hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret"),
-	end_form, "\n",
+	$html .= hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret");
+	$html .= hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret");
+	$html .= end_form . "\n";
 	$html .= end_html;
 	return $html;
 }
