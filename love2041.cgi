@@ -20,7 +20,7 @@ print page_header();
 
 # some globals used through the script
 $debug = 1;
-$students_dir = "./students/students";
+$students_dir = "./students";
 my $scripts_file = "scripts.js";
 
 my ($studentsRef, $preferencesRef) = loadHashes();
