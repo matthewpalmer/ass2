@@ -252,7 +252,7 @@ sub profile_html($) {
 	$html .= degree_html(degree($username));
 
 	# Our collapse/expand button
-	$html .= "<button id = 'show$username' onclick = 'toggleProfile(this);'>More info</button>";
+	$html .= "<button id = 'show$username' onclick = 'toggleProfile(this); return false;'>More info</button>";
 
 	$html .= "<div class = 'detailProfile' id = '$username'>";
 	# Display physical attributes
