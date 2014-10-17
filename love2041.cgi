@@ -54,12 +54,12 @@ my $maxKey = "max";
 
 # printHashes();
 
-# display_profile("AwesomeGenius60");
 if (isLoggedIn()) {
-
+	print browse_screen();
+} else {
+	print log_in_screen();
 }
 
-print browse_screen();
 print page_trailer();
 exit 0;
 
@@ -70,12 +70,31 @@ sub isLoggedIn {
 
 	if (defined $username && defined $password) {
 		return isCorrectPassword($username, $password);
+	} else {
+		return 0;
 	}
 }
 
 # Validates the given username and password
 sub isCorrectPassword {
+	my $username = shift;
+	my $password = shift;
 
+	if (defined password($username)) {
+		if ($password eq password($username)) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+sub log_in_screen {
+	return start_form, "\n",
+	"Username", textfield('username'), "<br/>\n",
+	"Password", password_field('password'), "<br/>\n",
+	submit('Log in'), "\n",
+	end_form, "\n";
 }
 
 sub display_profile {
@@ -376,6 +395,16 @@ sub gender($) {
 	my $username = shift;
 	my $gender = $studentsHash{$username}{$genderKey};
 	return $gender;
+}
+
+#
+# The user's password
+# [PRIVATE]
+#
+sub password($) {
+	my $username = shift;
+	my $password = $studentsHash{$username}{$passwordKey};
+	return $password if defined $password;
 }
 
 #
