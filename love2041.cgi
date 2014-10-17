@@ -55,9 +55,28 @@ my $maxKey = "max";
 # printHashes();
 
 # display_profile("AwesomeGenius60");
+if (isLoggedIn()) {
+
+}
+
 print browse_screen();
 print page_trailer();
 exit 0;
+
+# Checks whether a user is logged in properly
+sub isLoggedIn {
+	my $username = param('username');
+	my $password = param('password');
+
+	if (defined $username && defined $password) {
+		return isCorrectPassword($username, $password);
+	}
+}
+
+# Validates the given username and password
+sub isCorrectPassword {
+
+}
 
 sub display_profile {
 	my $username = shift;
