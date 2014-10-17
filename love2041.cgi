@@ -117,7 +117,9 @@ sub browse_screen {
 	my $stopLimit = $n + 10;
 
 	if ($stopLimit > (keys %studentsHash)) {
-		return "End of the road."
+		return p("End of the road.",
+		hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret"),
+		hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret");
 	}
 
 	foreach $i ($n..$n+10) {
@@ -129,7 +131,6 @@ sub browse_screen {
 		start_form, "\n",
 		"<input type = 'hidden' name = 'n' value = '$stopLimit'/>",
 		submit('Next'),"\n",
-			#NOTE: This might override the log in form's params??
 		hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret"),
 		hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret"),
 		end_form, "\n",
