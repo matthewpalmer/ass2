@@ -432,7 +432,7 @@ sub gender($) {
 sub password($) {
 	my $username = shift;
 	my $password = $studentsHash{$username}{$passwordKey};
-	return $password if defined $password;
+	return $password;
 }
 
 #
