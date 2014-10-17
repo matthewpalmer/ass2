@@ -73,9 +73,9 @@ sub search_results {
 	my $searchTerm = shift;
 	print p("Searching for '$searchTerm'...<br/>\n");
 	my @results = searchData($searchTerm);
-	my $html = ul(li(\@_)) . "\n";
+	my $html = ul(li(\@results)) . "\n";
 	foreach $user (@results) {
-		profile_html($user);
+		$html .= profile_html($user);
 	}
 	return $html;
 }
