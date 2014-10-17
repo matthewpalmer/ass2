@@ -95,6 +95,8 @@ sub isCorrectPassword {
 		}
 	}
 
+	print "Not logged in usernme '$username' password '$password'\n";
+
 	return 0;
 }
 
