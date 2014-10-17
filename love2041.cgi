@@ -74,7 +74,7 @@ sub isLoggedIn {
 	my $password = param('password');
 
 	foreach $k (keys %param) {
-		print $k, $param($k), "\n<br/>";
+		print $k, $param{$k}, "\n<br/>";
 	}
 
 	if (defined $username && defined $password) {
