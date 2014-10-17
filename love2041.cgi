@@ -78,7 +78,7 @@ sub search_results {
 		$html .= h3($user) . "\n";
 		$html .= image_html(profilePhotoURL($user)) . "<br/>\n";
 		$html .= gender_html(gender($user)) . "\n";
-		$html .= age_html(age($user)) . "\n";
+		$html .= age_html(birthdate($user)) . "\n";
 	}
 	return $html;
 }
@@ -160,11 +160,10 @@ sub browse_screen {
 		"\n",
 		"<input type = 'hidden' name = 'n' value = '$stopLimit'/>",
 		submit('Next'),"\n",
-		hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret"),
-		hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret"),
-		end_form, "\n",
 		p, "\n";
 }
+
+
 
 #
 # Search box
@@ -199,7 +198,9 @@ sub page_trailer {
 	$html .= "<script>";
 	$html .= scripts();
 	$html .= "</script>";
-
+	hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret"),
+	hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret"),
+	end_form, "\n",
 	$html .= end_html;
 	return $html;
 }
