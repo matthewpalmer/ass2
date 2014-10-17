@@ -258,7 +258,7 @@ sub profile_html($) {
 	# Display physical attributes
 	$html .= hair_color_html(hairColor($username));
 	$html .= weight_html(weight($username));
-	$html .= age_html(age($username));
+	$html .= age_html(birthdate($username));
 	$html .= height_html(height($username));
 
 	# Display favorite books, movies, tv shows, bands, hobbies, etc.
