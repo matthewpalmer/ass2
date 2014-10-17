@@ -21,6 +21,7 @@ print page_header();
 # some globals used through the script
 $debug = 1;
 $students_dir = "./students/students";
+my $scripts_file = "scripts.js";
 
 my ($studentsRef, $preferencesRef) = loadHashes();
 my %studentsHash = %{$studentsRef};
@@ -53,7 +54,8 @@ my $maxKey = "max";
 
 # printHashes();
 
-display_profile("AwesomeGenius60");
+# display_profile("AwesomeGenius60");
+print browse_screen();
 print page_trailer();
 exit 0;
 
@@ -65,20 +67,18 @@ sub display_profile {
 
 sub browse_screen {
 	my $n = param('n') || 0;
-	my @students = glob("$students_dir/*");
-	$n = min(max($n, 0), $#students);
-	param('n', $n + 1);
-	my $student_to_show  = $students[$n];
-	my $profile_filename = "$student_to_show/profile.txt";
-	open my $p, "$profile_filename" or die "can not open $profile_filename: $!";
-	$profile = join '', <$p>;
-	close $p;
+	my @students = sort keys %studentsHash;
+	my $listOfProfiles = "";
+	my $stopLimit = $n + 10;
 
-	return p,
-		start_form, "\n",
-		pre($profile),"\n",
+	foreach $i ($n..$n+10) {
+		my $student = $students[$i];
+		$listOfProfiles .= profile_html($student) . "\n\n";
+	}
+
+	return $listOfProfiles,
 		hidden('n', $n + 1),"\n",
-		submit('Next student'),"\n",
+		submit('Next'),"\n",
 		end_form, "\n",
 		p, "\n";
 }
@@ -104,8 +104,26 @@ sub page_header {
 sub page_trailer {
 	my $html = "";
 	$html .= join("", map("<!-- $_=".param($_)." -->\n", param())) if $debug;
+
+	$html .= "<script>";
+	$html .= scripts();
+	$html .= "</script>";
+
 	$html .= end_html;
 	return $html;
+}
+
+#
+# Scripts we use for the dynamic content.
+# We could access external files using <script src='..'>
+# We might switch to that if this approach isn't enough.
+# Note that this has to be added at the end so the DOM is fully
+# constructed.
+#
+sub scripts {
+	open F, "<", "$scripts_file";
+	my @lines = <F>;
+	return join "\n", @lines;
 }
 
 #
@@ -125,7 +143,7 @@ sub profile_html($) {
 	# Username
 	my $username = shift;
 
- 	my $html = "<div class = 'profile'>";
+ 	my $html .= "<div class = 'profile'>";
 	$html .=  h2($username);
 
 	# Display the profile photo if they have one.
@@ -134,8 +152,12 @@ sub profile_html($) {
 	}
 
 	# Display the degree
-	$html .= degree_html(degrees($username));
+	$html .= degree_html(degree($username));
 
+	# Our collapse/expand button
+	$html .= "<button id = 'show$username' onclick = 'toggleProfile(this);'>Show more</button>";
+
+	$html .= "<div class = 'detailProfile' id = '$username'>";
 	# Display physical attributes
 	$html .= hair_color_html(hairColor($username));
 	$html .= weight_html(weight($username));
@@ -148,7 +170,7 @@ sub profile_html($) {
 	$html .= tv_shows_html(favourite_TV_shows($username));
 	$html .= bands_html(favourite_bands($username));
 	$html .= movies_html(favourite_movies($username));
-
+	$html .= "</div>";
 	$html .= "</div>";
 
 	return $html;
@@ -195,10 +217,9 @@ sub bands_html {
 # HTML to display the user's degree(s?)
 # Takes a list of degrees
 #
-sub degree_html(@) {
-	my $html = "";
-	$html .= h4($_) . ". " foreach @_;
-	return $html . "\n";
+sub degree_html($) {
+	my $degree = shift;
+	return h4($degree) . "\n" if $degree ne "0";
 }
 
 #
@@ -208,7 +229,8 @@ sub degree_html(@) {
 sub attribute_html($$) {
 	my $type = shift;
 	my $value = shift;
-	if (defined $type && defined $value) {
+
+	if (defined $type && defined $value && $value ne "0") {
 		my $html = strong($type). ": ";
 		$html .= $value . "<br/>\n";
 		return $html;
@@ -285,9 +307,9 @@ sub otherPhotos($) {
 }
 
 #
-# A list of the user's degrees
+# The user's degree
 #
-sub degrees($) {
+sub degree($) {
 	my $username = shift;
 	return $studentsHash{$username}{$degreeKey};
 }
