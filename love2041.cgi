@@ -75,6 +75,9 @@ sub isLoggedIn {
 	my $username = param('username');
 	my $password = param('password');
 
+	chomp $username;
+	chomp $password;
+
 	if (defined $username && defined $password) {
 		return isCorrectPassword($username, $password);
 	} else {

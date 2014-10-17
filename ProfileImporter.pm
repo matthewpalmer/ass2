@@ -75,7 +75,6 @@ sub loadHashes {
         $studentsHash{$username}{$genderKey} = gender(@profile);
         $studentsHash{$username}{$weightKey} = weight(@profile);
         $studentsHash{$username}{$passwordKey} = password(@profile);
-        print "We got the password '", password(@profile), "'<br/>\n";
         $studentsHash{$username}{$hairColorKey} = hairColor(@profile);
         $studentsHash{$username}{$emailKey} = email(@profile);
         $studentsHash{$username}{$degreeKey} = degree(@profile);
