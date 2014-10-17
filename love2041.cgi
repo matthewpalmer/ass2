@@ -124,7 +124,7 @@ sub browse_screen {
 	print "going from $n to $stopLimit\n";
 
 	if ($stopLimit > (keys %studentsHash)) {
-		return "At the end."
+		return "End of the road."
 	} else {
 		return $listOfProfiles,
 			start_form, "\n",
