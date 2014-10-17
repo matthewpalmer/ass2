@@ -77,8 +77,8 @@ sub search_results {
 	foreach $user (@results) {
 		$html .= h3($user) . "\n";
 		$html .= image_html(profilePhotoURL($user)) . "<br/>\n";
-		$html .= gender_html($user) . "\n";
-		$html .= age_html($user) . "\n";
+		$html .= gender_html(gender($user)) . "\n";
+		$html .= age_html(age($user)) . "\n";
 	}
 	return $html;
 }
