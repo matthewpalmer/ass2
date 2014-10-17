@@ -1,10 +1,13 @@
 #!/usr/bin/perl -w
 
 package ProfileImporter;
-use Sub::Exporter;
+require Exporter;
 use warnings;
 
-Sub::Exporter::setup_exporter({ exports => [ qw(loadHashes) ]});
+# Sub::Exporter::setup_exporter({ exports => [ qw(loadHashes) ]});
+@ISA = qw(Exporter);
+@EXPORT = qw(&loadHashes);
+@EXPORT_OK = qw(&loadHashes);
 
 # Globals
 my $students_dir = "students";
