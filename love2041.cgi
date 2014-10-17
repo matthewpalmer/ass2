@@ -74,7 +74,6 @@ sub isLoggedIn {
 	my $password = param('password');
 
 	if (defined $username && defined $password) {
-		print "checking password...";
 		return isCorrectPassword($username, $password);
 	} else {
 		return 0;
@@ -85,18 +84,14 @@ sub isLoggedIn {
 sub isCorrectPassword {
 	my $username = shift;
 	my $password = shift;
-	print bands_html($studentsHash{$username}{$bandsKey});
-	# if (password($username)) {
-		print "password '$password' '", get_password($username), "'\n";
+
+	if (password($username)) {
 		if ($password eq get_password($username)) {
-			print "<strong>Logged in...</strong><br/>\n";
 			return 1;
 		}
-	# } else {
-		# print "password not defined for '$username'\n";
-	# }
-
-	print "Not logged in usernme '$username' password '$password' data '", $studentsHash{$username}{$passwordKey}, "'\n";
+	} else {
+		print "password not defined for '$username'\n";
+	}
 
 	return 0;
 }
@@ -127,7 +122,7 @@ sub browse_screen {
 	}
 
 	return $listOfProfiles,
-		hidden('n', $n + 1),"\n",
+		hidden('n', $stopLimit),"\n",
 		submit('Next'),"\n",
 		end_form, "\n",
 		p, "\n";
