@@ -24,3 +24,7 @@ function logout(el) {
 
   document.location.reload();
 }
+
+function goHome() {
+  document.location.reload();
+}

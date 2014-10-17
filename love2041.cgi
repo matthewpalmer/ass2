@@ -211,7 +211,7 @@ sub logout_button {
 }
 
 sub home_button {
-	my $html = "<button>Home</button>";
+	my $html = "<button onclick = 'goHome()'>Home</button>";
 	return $html;
 }
 
@@ -394,7 +394,7 @@ sub gender_html($) {
 #
 sub profilePhotoURL($) {
  	my $username = shift;
-	my $profilePhotoURL = $students_dir . "/" . $username . "profile.jpg";
+	my $profilePhotoURL = $students_dir . "/" . $username . "/profile.jpg";
 	return $profilePhotoURL;
 }
 
