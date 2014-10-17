@@ -90,17 +90,17 @@ sub isCorrectPassword {
 	my $username = shift;
 	my $password = shift;
 
-	if (defined password($username)) {
+	# if (password($username)) {
 		print "password '$password' '", password($username), "'\n";
 		if ($password eq password($username)) {
 			print "<strong>Logged in...</strong><br/>\n";
 			return 1;
 		}
-	} else {
-		print "password not defined for '$username'\n";
-	}
+	# } else {
+		# print "password not defined for '$username'\n";
+	# }
 
-	print "Not logged in usernme '$username' password '$password'\n";
+	print "Not logged in usernme '$username' password '$password' data '", $studentsHash{$username{$passwordKey}, "'\n";
 
 	return 0;
 }
