@@ -52,7 +52,7 @@ my $hairColorPrefKey = "hair_colours";
 my $minKey = "min";
 my $maxKey = "max";
 
-# printHashes();
+printHashes();
 
 my $pass = $studentsHash{'AwesomeGenius60'}{$passwordKey};
 print "password: '", $pass, "'\n<br/>";
