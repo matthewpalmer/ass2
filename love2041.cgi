@@ -123,15 +123,19 @@ sub browse_screen {
 
 	print "going from $n to $stopLimit\n";
 
-	return $listOfProfiles,
-		start_form, "\n",
-		"<input type = 'hidden' name = 'n' value = '$stopLimit'/>",
-		submit('Next'),"\n",
-			#NOTE: This might override the log in form's params??
-		hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret"),
-		hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret"),
-		end_form, "\n",
-		p, "\n";
+	if ($stopLimit > (keys %studentsHash)) {
+		return "At the end."
+	} else {
+		return $listOfProfiles,
+			start_form, "\n",
+			"<input type = 'hidden' name = 'n' value = '$stopLimit'/>",
+			submit('Next'),"\n",
+				#NOTE: This might override the log in form's params??
+			hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret"),
+			hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret"),
+			end_form, "\n",
+			p, "\n";
+	}
 }
 
 #
