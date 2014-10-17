@@ -168,10 +168,11 @@ sub logout_button {
 
 sub login_secret_fields {
 	my $html = "";
-
+	$html = start_form;
 	#NOTE: This might override the log in form's params??
 	$html .= hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret");
 	$html .= hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret");
+	$html = end_form;
 	return $html;
 }
 
@@ -217,7 +218,7 @@ sub profile_html($) {
 	$html .= degree_html(degree($username));
 
 	# Our collapse/expand button
-	$html .= "<button id = 'show$username' onclick = 'toggleProfile(this);'>Show more</button>";
+	$html .= "<button id = 'show$username' onclick = 'toggleProfile(this);'>More info</button>";
 
 	$html .= "<div class = 'detailProfile' id = '$username'>";
 	# Display physical attributes

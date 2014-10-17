@@ -6,10 +6,10 @@ function toggleProfile(el) {
 
   if (isExpanded) {
     element.style.display = 'none';
-    document.getElementById(el.id).innerHTML = "Show more";
+    document.getElementById(el.id).innerHTML = "More info";
   } else {
     element.style.display = 'block';
-    document.getElementById(el.id).innerHTML = "Show less";
+    document.getElementById(el.id).innerHTML = "Less info";
   }
 }
 
