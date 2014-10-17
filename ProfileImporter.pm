@@ -93,6 +93,7 @@ sub loadHashes {
         $studentsHash{$username}{$booksKey} = \@books;
         $studentsHash{$username}{$coursesKey} = \@courses;
 
+        print "\n We saved '$username' the password '", $studentsHash{$username}{$passwordKey}, "'\n";
         close F;
       } elsif ($file =~ /preferences.txt$/) {
         # Load the contents of their preferences into the hashes.

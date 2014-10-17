@@ -27,8 +27,6 @@ my ($studentsRef, $preferencesRef) = loadHashes();
 my %studentsHash = %{$studentsRef};
 my %preferencesHash = %{$preferencesRef};
 
-print "Password: '", $studentsHash{"password"}{"AwesomeGenius60"}, "'<br/>\n";
-
 # Keys to access these hashes
 my $profilePhotoKey = "profile_photo";
 my $photosKey = "photos";
@@ -56,6 +54,9 @@ my $maxKey = "max";
 
 # printHashes();
 
+my $pass = $studentsHash{'AwesomeGenius60'}{$passwordKey};
+print "password: '", $pass, "'\n<br/>";
+
 if (isLoggedIn()) {
 	print logged_in_header();
 	print browse_screen();
@@ -75,10 +76,8 @@ sub isLoggedIn {
 	my $username = param('username');
 	my $password = param('password');
 
-	chomp $username;
-	chomp $password;
-
 	if (defined $username && defined $password) {
+		print "checking password...";
 		return isCorrectPassword($username, $password);
 	} else {
 		return 0;
@@ -100,7 +99,7 @@ sub isCorrectPassword {
 		# print "password not defined for '$username'\n";
 	# }
 
-	print "Not logged in usernme '$username' password '$password' data '", $studentsHash{$username{$passwordKey}, "'\n";
+	print "Not logged in usernme '$username' password '$password' data '", $studentsHash{$username}{$passwordKey}, "'\n";
 
 	return 0;
 }
