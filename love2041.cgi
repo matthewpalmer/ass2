@@ -101,7 +101,7 @@ sub isCorrectPassword {
 sub log_in_screen {
 	return start_form, "\n",
 	"Username", textfield('username'), "<br/>\n",
-	"Password", password_field('password'), "<br/>\n",
+	"Password", textfield('password'), "<br/>\n",
 	submit('Log in'), "\n",
 	end_form, "\n";
 }
