@@ -12,3 +12,15 @@ function toggleProfile(el) {
     document.getElementById(el.id).innerHTML = "Show less";
   }
 }
+
+function logout(el) {
+  // We log out by removing the user's credentials from the secret form.
+  // And then we redirect the user.
+  alert('Are you sure you want to log out?');
+  var usernameFieldId = "usernameSecret";
+  var passwordFieldId = "passwordSecret";
+  document.getElementById(usernameFieldId).value = "";
+  document.getElementById(passwordFieldId).value = "";
+
+  document.location.reload();
+}

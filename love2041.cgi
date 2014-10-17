@@ -55,6 +55,7 @@ my $maxKey = "max";
 # printHashes();
 
 if (isLoggedIn()) {
+	print logged_in_header();
 	print browse_screen();
 } else {
 	print log_in_screen();
@@ -62,6 +63,10 @@ if (isLoggedIn()) {
 
 print page_trailer();
 exit 0;
+
+sub logged_in_header {
+	return logout_button();
+}
 
 # Checks whether a user is logged in properly
 sub isLoggedIn {
@@ -147,7 +152,23 @@ sub page_trailer {
 	$html .= scripts();
 	$html .= "</script>";
 
+	$html .= login_secret_fields();
+
 	$html .= end_html;
+	return $html;
+}
+
+sub logout_button {
+	my $html = "<button onclick = 'logout(this)'>Log out</button>";
+	return $html;
+}
+
+sub login_secret_fields {
+	my $html = "";
+
+	#NOTE: This might override the log in form's params??
+	$html .= hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret");
+	$html .= hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret");
 	return $html;
 }
 
