@@ -125,7 +125,7 @@ sub browse_screen {
 
 	return $listOfProfiles,
 		start_form, "\n",
-		hidden('n', $stopLimit),"\n",
+		hidden(-name => 'n', -default=>[$stopLimit]),"\n",
 		submit('Next'),"\n",
 			#NOTE: This might override the log in form's params??
 		hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret"),
