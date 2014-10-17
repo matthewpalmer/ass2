@@ -90,6 +90,7 @@ sub isCorrectPassword {
 	my $password = shift;
 
 	if (defined password($username)) {
+		print "password '$password' '", password($username), "'\n";
 		if ($password eq password($username)) {
 			return 1;
 		}
