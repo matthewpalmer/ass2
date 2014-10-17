@@ -148,7 +148,7 @@ sub browse_screen {
 	}
 
 	return $listOfProfiles,
-		start_form, "\n",
+		"\n",
 		"<input type = 'hidden' name = 'n' value = '$stopLimit'/>",
 		submit('Next'),"\n",
 		hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret"),
@@ -162,7 +162,7 @@ sub browse_screen {
 #
 sub search_field {
 	return start_form, "\n", textfield("search"), "\n",
-				 submit('Search'), "\n", end_form;
+				 submit('Search'), "\n";
 }
 
 #
@@ -191,22 +191,12 @@ sub page_trailer {
 	$html .= scripts();
 	$html .= "</script>";
 
-	$html .= login_secret_fields();
-
 	$html .= end_html;
 	return $html;
 }
 
 sub logout_button {
 	my $html = "<button onclick = 'logout(this)'>Log out</button>";
-	return $html;
-}
-
-sub login_secret_fields {
-	my $html = "";
-	$html .= start_form;
-
-	$html .= end_form;
 	return $html;
 }
 
