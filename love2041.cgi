@@ -441,10 +441,10 @@ sub weight($) {
 #
 # The user's age
 #
-sub age($) {
+sub birthdate($) {
 	my $username = shift;
-	my $age = $studentsHash{$username}{$ageKey};
-	return $age;
+	my $date = $studentsHash{$username}{$birthdateKey};
+	return $date;
 }
 
 #
