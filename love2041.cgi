@@ -75,7 +75,7 @@ sub search_results {
 }
 
 sub logged_in_header {
-	return logout_button();
+	return logout_button(), search_field();
 }
 
 sub searchPhrase {
@@ -162,7 +162,7 @@ sub browse_screen {
 #
 # Search box
 #
-sub searchField {
+sub search_field {
 	return start_form, "\n", textfield("search"), "\n",
 				 submit('Search'), "\n", end_form;
 }
