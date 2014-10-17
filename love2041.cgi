@@ -84,7 +84,7 @@ sub search_results {
 }
 
 sub logged_in_header {
-	return logout_button(), search_field();
+	return logout_button(), home_button(), search_field();
 }
 
 sub searchPhrase {
@@ -207,6 +207,11 @@ sub page_trailer {
 
 sub logout_button {
 	my $html = "<button onclick = 'logout(this)'>Log out</button>";
+	return $html;
+}
+
+sub home_button {
+	my $html = "<button>Home</button>";
 	return $html;
 }
 
