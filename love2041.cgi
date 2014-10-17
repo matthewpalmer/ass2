@@ -75,10 +75,7 @@ sub search_results {
 	my @results = searchData($searchTerm);
 	my $html = ul(li(\@_)) . "\n";
 	foreach $user (@results) {
-		$html .= h3($user) . "\n";
-		$html .= image_html(profilePhotoURL($user)) . "<br/>\n";
-		$html .= gender_html(gender($user)) . "\n";
-		$html .= age_html(birthdate($user)) . "\n";
+		profile_html($user);
 	}
 	return $html;
 }
