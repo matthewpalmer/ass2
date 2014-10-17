@@ -168,11 +168,11 @@ sub logout_button {
 
 sub login_secret_fields {
 	my $html = "";
-	$html = start_form;
+	$html .= start_form;
 	#NOTE: This might override the log in form's params??
 	$html .= hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret");
 	$html .= hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret");
-	$html = end_form;
+	$html .= end_form;
 	return $html;
 }
 
