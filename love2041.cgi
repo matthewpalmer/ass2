@@ -52,10 +52,7 @@ my $hairColorPrefKey = "hair_colours";
 my $minKey = "min";
 my $maxKey = "max";
 
-printHashes();
-
-my $pass = $studentsHash{'AwesomeGenius60'}{$passwordKey};
-print "password: '", $pass, "'\n<br/>";
+# printHashes();
 
 if (isLoggedIn()) {
 	print logged_in_header();
