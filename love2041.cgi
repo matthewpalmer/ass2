@@ -122,6 +122,7 @@ sub browse_screen {
 	}
 
 	return $listOfProfiles,
+		start_form, "\n",
 		hidden('n', $stopLimit),"\n",
 		submit('Next'),"\n",
 		end_form, "\n",
