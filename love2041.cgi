@@ -71,7 +71,9 @@ exit 0;
 
 sub search_results {
 	my $searchTerm = shift;
-	print "These are the search results for '$searchTerm'.\n";
+	print p("Searching for '$searchTerm'...<br/>\n");
+	my @results = searchData($searchTerm);
+	return preferences_html($searchTerm, @results);
 }
 
 sub logged_in_header {
@@ -507,6 +509,21 @@ sub favourite_movies($) {
 	}
 }
 
+#
+# Searching for a person's name
+#
+sub searchData($) {
+	my $searchTerm = shift;
+	my @results = ();
+
+	foreach $key (keys %studentsHash) {
+		if ($key =~ /$searchTerm/) {
+			push @results, $key;
+		}
+	}
+
+	return @results;
+}
 
 sub printHashes {
   foreach $key (keys %studentsHash) {
