@@ -118,8 +118,8 @@ sub browse_screen {
 
 	if ($stopLimit > (keys %studentsHash)) {
 		return p("End of the road."),
-		hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret"),
-		hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret");
+			hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret"),
+			hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret");
 	}
 
 	foreach $i ($n..$n+10) {
