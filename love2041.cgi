@@ -121,6 +121,8 @@ sub browse_screen {
 		$listOfProfiles .= profile_html($student) . "\n\n";
 	}
 
+	print "going from $n to $stopLimit\n";
+
 	return $listOfProfiles,
 		start_form, "\n",
 		hidden('n', $stopLimit),"\n",
