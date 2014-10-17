@@ -134,8 +134,6 @@ sub browse_screen {
 	my $listOfProfiles = "";
 	my $stopLimit = $n + 10;
 
-	my $html =
-
 	if ($stopLimit > (keys %studentsHash)) {
 		return p("End of the road."),
 			start_form,
@@ -177,7 +175,7 @@ sub search_field {
 sub page_header {
 	return header,
    		start_html("-title"=>"LOVE2041", -style=>{'src'=>"styles.css"}),
- 		center(h1("LOVE2041"));
+ 			center(h1("LOVE2041"));
 }
 
 #
@@ -222,7 +220,7 @@ sub login_secret_fields {
 sub scripts {
 	open F, "<", "$scripts_file";
 	my @lines = <F>;
-	return join "\n", @lines;
+	return join "", @lines;
 }
 
 #
