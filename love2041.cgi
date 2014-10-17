@@ -90,8 +90,8 @@ sub isCorrectPassword {
 	my $password = shift;
 
 	# if (password($username)) {
-		print "password '$password' '", password($username), "'\n";
-		if ($password eq password($username)) {
+		print "password '$password' '", get_password($username), "'\n";
+		if ($password eq get_password($username)) {
 			print "<strong>Logged in...</strong><br/>\n";
 			return 1;
 		}
@@ -432,7 +432,7 @@ sub gender($) {
 # The user's password
 # [PRIVATE]
 #
-sub password($) {
+sub get_password($) {
 	my $username = shift;
 	my $password = $studentsHash{$username}{$passwordKey};
 	return $password;
