@@ -8,6 +8,7 @@ use FindBin qw( $RealBin );
 use lib $RealBin;
 
 use ProfileImporter qw(loadHashes);
+use Matchmaker qw(matches);
 
 use CGI qw/:all/;
 use CGI::Carp qw(fatalsToBrowser warningsToBrowser);
@@ -53,6 +54,8 @@ my $minKey = "min";
 my $maxKey = "max";
 
 # printHashes();
+
+print "<!-- ", matches(\%studentsHash, \%preferencesHash, "AwesomeGenius60"), "-->\n\n";
 
 if (isLoggedIn()) {
 	print logged_in_header();
