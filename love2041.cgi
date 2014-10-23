@@ -14,6 +14,8 @@ use CGI qw/:all/;
 use CGI::Carp qw(fatalsToBrowser warningsToBrowser);
 use Data::Dumper;
 use List::Util qw/min max/;
+use Scalar::Util qw(looks_like_number);
+
 warningsToBrowser(1);
 
 # print start of HTML ASAP to assist debugging if there is an error in the script
@@ -57,23 +59,23 @@ my $maxKey = "max";
 
 print "<!-- ", matches(\%studentsHash, \%preferencesHash, "AwesomeGenius60"), "-->\n\n";
 
-
-
-# if (isLoggedIn()) {
+if (isLoggedIn()) {
 	print logged_in_header();
 	my $searchTerm = searchPhrase();
 	my $viewingProfileOf = isViewingProfile();
-	print "Viewing profile of '$viewingProfileOf'\n";
+
 	if ($viewingProfileOf) {
 		print display_profile($viewingProfileOf);
 	} elsif ($searchTerm) {
 		print search_results($searchTerm);
+	} elsif (param('matches')) {
+		print show_matches();
 	} else {
 		print browse_screen();
 	}
-# } else {
-	# print log_in_screen();
-# }
+} else {
+	print log_in_screen();
+}
 
 print page_trailer();
 exit 0;
@@ -90,7 +92,7 @@ sub search_results {
 }
 
 sub logged_in_header {
-	return logout_button(), home_button(), search_field();
+	return logout_button(), search_field(), home_button(), matches_button();
 }
 
 sub searchPhrase {
@@ -132,8 +134,6 @@ sub isCorrectPassword {
 # Checks whether the user wants to view a profile.
 # Returns the username to display if so.
 sub isViewingProfile {
-	print "Getting the profile...\n";
-	print "Param '", param('profile'), "'\n";
 	return param('profile');
 }
 
@@ -150,6 +150,19 @@ sub display_profile {
 	my $html = full_profile_html($username);
 	print $html;
 }
+
+sub show_matches {
+	my $username = param('username');
+	my $value = param('matches');
+
+	my @myMatches = matches(\%studentsHash, \%preferencesHash, $username);
+
+	my $limit = looks_like_number($value) ? $value : 10;
+	my $html = match_html($limit, @myMatches);
+	print $html;
+}
+
+
 
 sub browse_screen {
 	my $n = param('n') || 0;
@@ -185,6 +198,13 @@ sub browse_screen {
 sub search_field {
 	return start_form, "\n", textfield("search"), "\n",
 				 submit('Search'), "\n";
+}
+
+#
+# Matches button
+#
+sub matches_button {
+	return "<button method = 'GET' name = 'matches' value = '10'>Matches</button>";
 }
 
 #
@@ -304,7 +324,7 @@ sub profile_snippet_html($) {
 
 	# Our collapse/expand button
 	# $html .= "<button id = 'show$username' onclick = 'toggleProfile(this); return false;'>More info</button>";
-	$html .= "<button name='profile' value='$username'>More info</button>";
+	$html .= "<button method = 'GET' name='profile' value='$username'>More info</button>";
 	$html .= "</div>";
 
 	return $html;
@@ -415,6 +435,24 @@ sub gender_html($) {
 	my $genderKey = "Gender";
 	my $value = shift;
 	return attribute_html($genderKey, $value);
+}
+
+# Displays the list of matches for a user.
+# Takes the number of matches to return (< matches.length)
+# and the list of matches.
+sub match_html {
+	my $limit = shift;
+	my @matches = @_;
+	my $html = "";
+	$html .= h2("Matches");
+	my $i = 0;
+	while ($i < $limit && $matches[$i]) {
+		my $username = $matches[$i];
+		$html .= profile_snippet_html($username);
+
+		$i++;
+	}
+	return $html;
 }
 
 #
