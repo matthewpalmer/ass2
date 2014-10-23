@@ -57,17 +57,23 @@ my $maxKey = "max";
 
 print "<!-- ", matches(\%studentsHash, \%preferencesHash, "AwesomeGenius60"), "-->\n\n";
 
-if (isLoggedIn()) {
+
+
+# if (isLoggedIn()) {
 	print logged_in_header();
 	my $searchTerm = searchPhrase();
-	if ($searchTerm) {
+	my $viewingProfileOf = isViewingProfile();
+	print "Viewing profile of '$viewingProfileOf'\n";
+	if ($viewingProfileOf) {
+		print display_profile($viewingProfileOf);
+	} elsif ($searchTerm) {
 		print search_results($searchTerm);
 	} else {
 		print browse_screen();
 	}
-} else {
-	print log_in_screen();
-}
+# } else {
+	# print log_in_screen();
+# }
 
 print page_trailer();
 exit 0;
@@ -78,7 +84,7 @@ sub search_results {
 	my @results = searchData($searchTerm);
 	my $html = ul(li(\@results)) . "\n";
 	foreach $user (@results) {
-		$html .= profile_html($user);
+		$html .= profile_snippet_html($user);
 	}
 	return $html;
 }
@@ -123,6 +129,14 @@ sub isCorrectPassword {
 	return 0;
 }
 
+# Checks whether the user wants to view a profile.
+# Returns the username to display if so.
+sub isViewingProfile {
+	print "Getting the profile...\n";
+	print "Param '", param('profile'), "'\n";
+	return param('profile');
+}
+
 sub log_in_screen {
 	return start_form, "\n",
 	"Username", textfield('username'), "<br/>\n",
@@ -133,7 +147,7 @@ sub log_in_screen {
 
 sub display_profile {
 	my $username = shift;
-	my $html = profile_html($username);
+	my $html = full_profile_html($username);
 	print $html;
 }
 
@@ -153,7 +167,7 @@ sub browse_screen {
 
 	foreach $i ($n..$n+10) {
 		my $student = $students[$i];
-		$listOfProfiles .= profile_html($student) . "\n\n";
+		$listOfProfiles .= profile_snippet_html($student) . "\n\n";
 	}
 
 	return $listOfProfiles,
@@ -239,9 +253,41 @@ sub image_html($) {
 }
 
 #
-# HTML for the person's profile
+# HTML for the person's full profile
 #
-sub profile_html($) {
+sub full_profile_html($) {
+	my $username = shift;
+ 	my $html .= "<div class = 'profile'>";
+	$html .=  h2($username);
+
+	# Display the profile photo if they have one.
+	if (-e profilePhotoURL($username)) {
+		$html .= image_html(profilePhotoURL($username));
+	}
+
+	# Display the degree
+	$html .= degree_html(degree($username));
+	$html .= "<div class = 'detailProfile' id = '$username'>";
+	# Display physical attributes
+	$html .= hair_color_html(hairColor($username));
+	$html .= weight_html(weight($username));
+	$html .= age_html(birthdate($username));
+	$html .= height_html(height($username));
+
+	# Display favorite books, movies, tv shows, bands, hobbies, etc.
+	$html .= hobbies_html(favourite_hobbies($username));
+	$html .= books_html(favourite_books($username));
+	$html .= tv_shows_html(favourite_TV_shows($username));
+	$html .= bands_html(favourite_bands($username));
+	$html .= movies_html(favourite_movies($username));
+	$html .= "</div>";
+	return $html;
+}
+
+#
+# HTML for a snippet of the person's profile
+#
+sub profile_snippet_html($) {
 	# Username
 	my $username = shift;
 
@@ -257,22 +303,8 @@ sub profile_html($) {
 	$html .= degree_html(degree($username));
 
 	# Our collapse/expand button
-	$html .= "<button id = 'show$username' onclick = 'toggleProfile(this); return false;'>More info</button>";
-
-	$html .= "<div class = 'detailProfile' id = '$username'>";
-	# Display physical attributes
-	$html .= hair_color_html(hairColor($username));
-	$html .= weight_html(weight($username));
-	$html .= age_html(birthdate($username));
-	$html .= height_html(height($username));
-
-	# Display favorite books, movies, tv shows, bands, hobbies, etc.
-	$html .= hobbies_html(favourite_hobbies($username));
-	$html .= books_html(favourite_books($username));
-	$html .= tv_shows_html(favourite_TV_shows($username));
-	$html .= bands_html(favourite_bands($username));
-	$html .= movies_html(favourite_movies($username));
-	$html .= "</div>";
+	# $html .= "<button id = 'show$username' onclick = 'toggleProfile(this); return false;'>More info</button>";
+	$html .= "<button name='profile' value='$username'>More info</button>";
 	$html .= "</div>";
 
 	return $html;
