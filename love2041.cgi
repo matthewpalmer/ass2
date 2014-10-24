@@ -48,6 +48,7 @@ my $tvShowsKey = "favourite_TV_shows";
 my $hobbiesKey = "favourite_hobbies";
 my $booksKey = "favourite_books";
 my $coursesKey = "courses";
+my $profileTextKey = "profile_text";
 
 # Preferences
 my $ageKey = "age";
@@ -87,8 +88,18 @@ if (param('email')) {
 		print search_results($searchTerm);
 	} elsif (param('matches')) {
 		print show_matches();
+	} elsif (param('editProfile')) {
+		print edit_profile();
 	} else {
-		print browse_screen();
+		if (param('did_edit_profile')) {
+			my $username = param('username');
+			my $profile_text = param('profile_text');
+			print "editing profile for $username $profile_text";
+			update_profile_text($username, $profile_text) if $profile_text;
+
+		} else {
+			print browse_screen();
+		}
 	}
 } elsif (param('signUp')) {
 		print sign_up_form();
@@ -115,7 +126,7 @@ sub search_results {
 }
 
 sub logged_in_header {
-	return logout_button(), search_field(), home_button(), matches_button();
+	return logout_button(), search_field(), home_button(), matches_button(), edit_profile_button();
 }
 
 sub searchPhrase {
@@ -223,7 +234,10 @@ sub browse_screen {
 		p, "\n";
 }
 
-
+sub edit_profile {
+	return "Profile text", textfield('profile_text'),
+	"<button type = 'submit' name = 'did_edit_profile' value = 'true'>Submit</button>", "\n";
+}
 
 #
 # Search box
@@ -238,6 +252,13 @@ sub search_field {
 #
 sub matches_button {
 	return "<button method = 'GET' name = 'matches' value = '10'>Matches</button>";
+}
+
+#
+# Edit profile button
+#
+sub edit_profile_button {
+	return "<button method = 'GET' name = 'editProfile' value = 'true'>Edit profile</button>";
 }
 
 #
@@ -321,6 +342,7 @@ sub full_profile_html($) {
 	# Display the degree
 	$html .= degree_html(degree($username));
 	$html .= "<div class = 'detailProfile' id = '$username'>";
+	$html .= profile_text_html(profile_text($username));
 	# Display physical attributes
 	$html .= hair_color_html(hairColor($username));
 	$html .= weight_html(weight($username));
@@ -470,6 +492,12 @@ sub gender_html($) {
 	return attribute_html($genderKey, $value);
 }
 
+sub profile_text_html($) {
+	my $textKey = "Profile text";
+	my $value = shift;
+	return attribute_html($textKey, $value);
+}
+
 # Displays the list of matches for a user.
 # Takes the number of matches to return (< matches.length)
 # and the list of matches.
@@ -565,6 +593,15 @@ sub gender($) {
 }
 
 #
+# The user's profile text
+#
+sub profile_text($) {
+	my $username = shift;
+	my $text = $studentsHash{$username}{$profileTextKey};
+	return $text;
+}
+
+#
 # The user's password
 # [PRIVATE]
 #
@@ -657,6 +694,18 @@ sub register {
 
 	# Save their details to file.
 	save_data($username, $password, $email, $secret);
+}
+
+#
+# Update a user's information
+#
+sub update_profile_text {
+	my $username = shift;
+	my $text = shift;
+	print "Updating profile text....";
+	open F, ">>", "$students_dir/$username/profile.txt" or die "Couln't open user's profile.";
+	print F data_field("profile_text", $text);
+	close F;
 }
 
 # Saves the user's details to the file

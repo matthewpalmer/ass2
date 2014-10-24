@@ -27,6 +27,7 @@ my $passwordKey = "password";
 my $hairColorKey = "hair_color";
 my $emailKey = "email";
 my $degreeKey = "degree";
+my $profileTextKey = "profile_text";
 my $bandsKey = "favourite_bands";
 my $moviesKey = "favourite_movies";
 my $tvShowsKey = "favourite_TV_shows";
@@ -77,6 +78,7 @@ sub loadHashes {
         $studentsHash{$username}{$hairColorKey} = hairColor(@profile);
         $studentsHash{$username}{$emailKey} = email(@profile);
         $studentsHash{$username}{$degreeKey} = degree(@profile);
+        $studentsHash{$username}{$profileTextKey} = profileText(@profile);
 
         my @bands = bands(@profile);
         my @shows = tvShows(@profile);
@@ -250,6 +252,10 @@ sub email {
 
 sub degree {
   return singleAttribute("degree", @_);
+}
+
+sub profileText {
+  return singleAttribute("profile_text", @_);
 }
 
 sub tvShows {
