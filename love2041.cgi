@@ -59,8 +59,25 @@ my $maxKey = "max";
 
 print "<!-- ", matches(\%studentsHash, \%preferencesHash, "AwesomeGenius60"), "-->\n\n";
 
-if (isLoggedIn()) {
+
+# If there's an email parameter, the user's just signed up.
+if (param('email')) {
+	my $username = param('username');
+	my $password = param('password');
+	my $email = param('email');
+
+  print "Signing up $username, $password, $email<br/>\n";
+  my ($isValid, $errorMessage) = valid_user($username, $password, $email);
+	if ($isValid) {
+		register($username, $password, $email);
+		print "<strong>Registering $username, $password, $email. Check your emails.</strong>\n";
+	} else {
+		print "Data entered was not valid '$errorMessage'\n";
+		print sign_up_form();
+	}
+} elsif (isLoggedIn()) {
 	print logged_in_header();
+	print "Welcome to LOVE2041\n";
 	my $searchTerm = searchPhrase();
 	my $viewingProfileOf = isViewingProfile();
 
@@ -73,12 +90,18 @@ if (isLoggedIn()) {
 	} else {
 		print browse_screen();
 	}
+} elsif (param('signUp')) {
+		print sign_up_form();
 } else {
 	print log_in_screen();
 }
 
 print page_trailer();
 exit 0;
+
+#
+# Gets the HTML search results
+#
 
 sub search_results {
 	my $searchTerm = shift;
@@ -141,7 +164,17 @@ sub log_in_screen {
 	return start_form, "\n",
 	"Username", textfield('username'), "<br/>\n",
 	"Password", textfield('password'), "<br/>\n",
+	"<button name = 'signUp' value = 'true'>Sign Up</button>",
 	submit('Log in'), "\n",
+	end_form, "\n";
+}
+
+sub sign_up_form {
+	return start_form, "\n",
+	"Username", textfield('username'), "<br/>\n",
+	"Password", textfield('password'), "<br/>\n",
+	"Email", textfield('email'), "<br/>\n",
+	submit('Sign up'), "\n",
 	end_form, "\n";
 }
 
@@ -606,6 +639,124 @@ sub searchData($) {
 	}
 
 	return @results;
+}
+
+#
+# User account updating and creation.
+#
+
+# Register a new user.
+# Takes username, password, and email.
+sub register {
+	my $username = shift;
+	my $password = shift;
+	my $email = shift;
+
+	# Send the email to confirm their account.
+	my $secret = confirmation_email($username, $email);
+
+	# Save their details to file.
+	save_data($username, $password, $email, $secret);
+}
+
+# Saves the user's details to the file
+sub save_data {
+	my $username = shift;
+	my $password = shift;
+	my $email = shift;
+	my $secret = shift;
+
+	if (-d "$students_dir/$username") {
+		# This user already exists.
+		print "<strong>This user couldn't be saved.</strong>";
+	} else {
+		# The user doesn't have a directory. Create it.
+		mkdir "$students_dir/$username" or die "ERROR: Couldn't create directory";
+
+		# Now save to their profile.
+		open F, ">", "$students_dir/$username/profile.txt" or die "ERROR: Couldn't open file";
+
+		print F data_field("username", $username);
+		print F data_field("password", $password);
+		print F data_field("email", $email);
+		print F data_field("secret", $secret);
+		close F;
+	}
+}
+
+sub data_field {
+	my $key = shift;
+	my $value = shift;
+	return "$key:\n        $value\n";
+}
+
+# Validate whether the user trying to be registered is valid.
+# Takes username, password, and email.
+sub valid_user {
+	my ($username, $password, $email) = (shift, shift, shift);
+
+	if (!valid_username($username)) {
+		return (0, "The username was not valid");
+	} elsif (!valid_password($password)) {
+		return (0, "The password was not valid");
+	} elsif (!valid_email($email)) {
+		return (0, "The email was not valid");
+	} elsif (user_exists($username)) {
+		return (0, "That username is taken");
+	}
+
+	return 1;
+}
+
+# Usernames have to be 1-20 characters long, containing letters, numbers
+# and underscores only.
+sub valid_username {
+	my $username = shift;
+	return 1 if ($username =~ /[A-Za-z0-9_]{1,20}/);
+}
+
+# Passwords have to be 1-128 characters long.
+sub valid_password {
+	return 1 if (shift =~ /.{1,128}/);
+}
+
+# Emails have to be of a standard form.
+sub valid_email {
+	return 1 if (shift =~ /^\w+@\w+(\.\w+)+/);
+}
+
+# Checks whether the given username already exists
+sub user_exists {
+	my $username = shift;
+	return 1 if (defined $studentsHash{$username});
+}
+
+# Send a confirmation email to the person registering
+sub confirmation_email {
+	my $username = shift;
+	my $email = shift;
+
+	my $suffix = random_letters();
+
+	my $url = "http://cgi.cse.unsw.edu.au" . $ENV{"SCRIPT_URL"} . "?confirm=$suffix";
+	my $content = "Hi $username,\n\nThanks for signing up for LOVE2041.\n";
+	$content .= "Here's the link to confirm your account: $url.\n";
+
+	# Cleanup input just in case
+	$username =~ s/;\`\'\"//g;
+	$email =~ s/;\`\'\"//g;
+
+	# Send the email
+	`echo "$content" | mail -s LOVE2041 $email`;
+
+	return $suffix;
+}
+
+sub random_letters {
+	my @chars = ("A".."Z", "a".."z");
+	my $string;
+	$string .= $chars[rand @chars] for 1..8;
+	return $string;
 }
 
 sub printHashes {
