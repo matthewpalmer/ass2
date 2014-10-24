@@ -95,6 +95,19 @@ if (param('email')) {
 			my $username = param('username');
 			my $profile_text = param('profile_text');
 			print "editing profile for $username $profile_text";
+			if (param('photo')) {
+				my $file = param('photo');
+				my $file_handle = upload('photo');
+				print "Saving profile photo '$file'...\n";
+				# upload_profile_photo($username, $file_handle);
+				print "to $students_dir/$username/profile.jpg\n";
+				open (UPLOADFILE, ">$students_dir/$username/profile.jpg") or die "Couldn't open file.";
+				binmode UPLOADFILE;
+				while (<$file_handle>) {
+					print UPLOADFILE;
+				}
+				close UPLOADFILE;
+			}
 			update_profile_text($username, $profile_text) if $profile_text;
 
 		} else {
@@ -235,8 +248,9 @@ sub browse_screen {
 }
 
 sub edit_profile {
-	return "Profile text", textfield('profile_text'),
-	"<button type = 'submit' name = 'did_edit_profile' value = 'true'>Submit</button>", "\n";
+	$form .= "<p>Photo: <input type = 'file' name = 'photo'/></p>";
+	return $form, "Profile text", textfield('profile_text'),
+	"<input type = 'submit' name = 'did_edit_profile' value = 'Submit'></input>", "\n";
 }
 
 #
@@ -783,7 +797,7 @@ sub user_exists {
 # Send a confirmation email to the person registering
 sub confirmation_email {
 	my $username = shift;
-	my $email = shift;
+	my $address = shift;
 
 	my $suffix = random_letters();
 
@@ -791,12 +805,16 @@ sub confirmation_email {
 	my $content = "Hi $username,\n\nThanks for signing up for LOVE2041.\n";
 	$content .= "Here's the link to confirm your account: $url.\n";
 
-	# Cleanup input just in case
-	$username =~ s/;\`\'\"//g;
-	$email =~ s/;\`\'\"//g;
+	# Email snippet by Andrew Taylor
+	# Remove all but characters legal in e-mail addresses
+	# and reduce to maximum allowed length
+	$address = substr($address, 0, 256);
+	$address =~ s/[^\w\.\@\-\!\#\$\%\&\'\*\+\-\/\=\?\^_\`\{\|\}\~]//g;
+	$content =~ s/\`//g;
 
-	# Send the email
-	`echo "$content" | mail -s LOVE2041 $email`;
+	open F, '|-', 'mail', '-s', 'LOVE2041', $address or die "Can not run mail";
+	print F "$content\n";
+	close F;
 
 	return $suffix;
 }
@@ -806,6 +824,30 @@ sub random_letters {
 	my $string;
 	$string .= $chars[rand @chars] for 1..8;
 	return $string;
+}
+
+#
+# Given a file name and file handle, saves that file as the user's profile
+#
+sub upload_file {
+	my $filename = shift;
+	my $file_handle = shift;
+
+	open F, ">", $filename or die "Couldn't open file to save photo.";
+
+	while (<$file_handle>) {
+		print "Saving...";
+		print F;
+	}
+	print "Finished saving photo.";
+	close F;
+}
+
+sub upload_profile_photo {
+	my $username = shift;
+	my $file_handle = shift;
+	my $file = "$students_dir/$username/profile.jpg";
+	upload_file($file, $file_handle);
 }
 
 sub printHashes {
