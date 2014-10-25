@@ -26,6 +26,7 @@ $debug = 1;
 $students_dir = "./students";
 $suspended_dir = "./suspended";
 $deleted_dir = "./deleted";
+$reset_file = "./reset.txt";
 my $scripts_file = "scripts.js";
 
 my ($studentsRef, $preferencesRef) = loadHashes();
@@ -127,11 +128,36 @@ if (param('email')) {
 	 	print p("Please provide your username and password.");
 	}
 } else {
-	print log_in_screen();
+	print "Else way up here\n";
+	if (param('reset_password') && param('reset_username')) {
+		print "Resetting password now";
+		reset_password(param('reset_username'));
+	} elsif (param('reset')) {
+		print "we have a reset request";
+		my $username = username_for_reset(param('reset'));
+		print reset_html($username);
+	} elsif (param('password_for_reset') && param('username_for_reset')) {
+		print "Saving reset password\n";
+		save_reset_password(param('username_for_reset'), param('password_for_reset'));
+	} else {
+		print log_in_screen();
+	}
 }
 
 print page_trailer();
 exit 0;
+
+#
+# Gets the HTML to reset a password
+#
+sub reset_html {
+	my $username = shift;
+	chomp $username;
+	return start_form , p("Password") , textfield("password_for_reset"),
+				 hidden(-name => 'username_for_reset',  -default => [$username]),
+				 submit("Submit"), end_form;
+}
+
 
 #
 # Gets the HTML search results
@@ -201,7 +227,10 @@ sub log_in_screen {
 	submit('Log in'), "\n",
 	"<button name = 'signUp' value = 'true'>Sign Up</button>",
 	"<br/><br/>", "\n",
-	"<button name = 'recover_account' value = 'true'>Recover account</button>",
+	"<button name = 'recover_account' value = 'true'>Renew suspended account.</button>",
+	"<br/>", "<br/>", "\n",
+	p("Username"), textfield('reset_username'),
+	"<button name = 'reset_password' value = 'true'>Reset password.</button>",
 	end_form, "\n";
 }
 
@@ -763,18 +792,17 @@ sub register {
 #
 # Update a user's information
 #
-sub update_profile_text {
+sub update_single_attribute {
 	my $username = shift;
-	my $text = shift;
-	print "Updating profile text....";
-	open G, "<", "$students_dir/$username/profile.txt" or die "Couldn't open user's profile.";
+	my $key = shift;
+	my $value = shift;
 
+	open G, "<", "$students_dir/$username/profile.txt" or die "Couldn't open user '$username' profile.";
 	my @profile = <G>;
 	my $i = 0;
-	# Find whether the user has profile text already
+	# Find whether the user has a value for this key already
 	while ($i < @profile) {
-		if ($profile[$i] eq "profile_text:\n") {
-			print "Was true!";
+		if ($profile[$i] eq "$key:\n") {
 			splice @profile, $i, 1;
 			splice @profile, $i, 1;
 			last;
@@ -785,13 +813,20 @@ sub update_profile_text {
 	close G;
 	open F, ">", "$students_dir/$username/profile.txt" or die "Couldn't open user's profile.";
 
-	splice @profile, $i, 0, data_field("profile_text", $text);
+	splice @profile, $i, 0, data_field($key, $value);
 
 	foreach (@profile) {
 		print F $_;
 	}
 
 	close F;
+}
+
+# Update profile text
+sub update_profile_text {
+	my $username = shift;
+	my $text = shift;
+	update_single_attribute($username, "profile_text", $text);
 }
 
 # Saves the user's details to the file
@@ -866,6 +901,10 @@ sub user_exists {
 	return 1 if (defined $studentsHash{$username});
 }
 
+sub my_url {
+	return $url = "http://cgi.cse.unsw.edu.au" . $ENV{"SCRIPT_URL"};
+}
+
 # Send a confirmation email to the person registering
 sub confirmation_email {
 	my $username = shift;
@@ -873,22 +912,29 @@ sub confirmation_email {
 
 	my $suffix = random_letters();
 
-	my $url = "http://cgi.cse.unsw.edu.au" . $ENV{"SCRIPT_URL"} . "?confirm=$suffix";
+	my $url = my_url() . "?confirm=$suffix";
 	my $content = "Hi $username,\n\nThanks for signing up for LOVE2041.\n";
 	$content .= "Here's the link to confirm your account: $url.\n";
 
-	# Email snippet by Andrew Taylor
-	# Remove all but characters legal in e-mail addresses
-	# and reduce to maximum allowed length
-	$address = substr($address, 0, 256);
-	$address =~ s/[^\w\.\@\-\!\#\$\%\&\'\*\+\-\/\=\?\^_\`\{\|\}\~]//g;
-	$content =~ s/\`//g;
-
-	open F, '|-', 'mail', '-s', 'LOVE2041', $address or die "Can not run mail";
-	print F "$content\n";
-	close F;
+	send_email($address, $content);
 
 	return $suffix;
+}
+
+# Email snippet by Andrew Taylor
+sub send_email {
+	my $recipient = shift;
+	my $message = shift;
+
+	# Remove all but characters legal in e-mail addresses
+	# and reduce to maximum allowed length
+	$recipient = substr($recipient, 0, 256);
+	$recipient =~ s/[^\w\.\@\-\!\#\$\%\&\'\*\+\-\/\=\?\^_\`\{\|\}\~]//g;
+	$message =~ s/\`//g;
+
+	open F, '|-', 'mail', '-s', 'LOVE2041', $recipient or die "Can not run mail";
+	print F "$message\n";
+	close F;
 }
 
 sub random_letters {
@@ -977,6 +1023,56 @@ sub delete_user {
 	if (-d "$students_dir/$username") {
 		rename("$students_dir/$username", "$deleted_dir/$username");
 	}
+}
+
+#
+# Reset a user's password
+#
+sub reset_password {
+	print "In the reset subro";
+	my $username = shift;
+	my $email = $studentsHash{$username}{$emailKey};
+	if ($email) {
+		my $random = random_letters();
+		my $url = my_url . "?reset=" . $random;
+		print "Sending you an email...";
+		my $message = "Hi $username,\nA request to reset your account for LOVE2041 was made recently.\n" .
+		              "If you'd like to continue with this request, please click this link: $url." .
+		              "\n\n" .
+		              "Ignore this message if it was sent to you by mistake.";
+    send_email($email, $message);
+    open F, ">>", $reset_file;
+    print F "$random:$username\n";
+    close F;
+	} else {
+		print p("We can't reset this account because there is no email address associated with it.");
+	}
+}
+
+#
+# Gets the username from the reset requests file for the code we received.
+#
+sub username_for_reset {
+	my $code = shift;
+	open F, "<", $reset_file;
+	while (<F>) {
+		if ($_ =~ /^$code/) {
+			# Now get the username from here.
+			my $line = $_;
+			$line =~ s/$code://;
+			return $line;
+		}
+	}
+}
+
+#
+# Complete the reset password request
+#
+sub save_reset_password {
+	my $username = shift;
+	my $password = shift;
+	print "Saving '$username' '$password'\n";
+	update_single_attribute($username, "password", $password);
 }
 
 sub printHashes {
