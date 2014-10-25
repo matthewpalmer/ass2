@@ -118,7 +118,9 @@ sub matches {
   my %attributeMatches = ();
   my @attributes = (@ageMatches, @weightMatches, @genderMatches, @hairMatches, @heightMatches);
   # Get a count of how many times each user has the attribute we want.
-  $attributeMatches{$_}++ foreach (@attributes);
+  # Attribute matches are worth twice as much as interest-based matches.
+  $attributeMatches{$_} = ($attributeMatches{$_} || 0) + 2 foreach (@attributes);
+  $attributeMatches{$_} = ($attributeMatches{$_} || 0) + 1 foreach (@usersWithSimilarInterests);
   # Sort the users based on number of matching attributes.
   my @keys = sort {$attributeMatches{$b} <=> $attributeMatches{$a}} keys (%attributeMatches);
 

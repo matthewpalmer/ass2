@@ -30,6 +30,9 @@ function goHome() {
 }
 
 window.onload = function() {
+  // Due to the way we're doing a form-based site, we need
+  // to reset the search field so that we can display stuff other
+  // than the search results after searching.
   document.getElementById('search_field').value = "";
   document.getElementById('search_field').content = "";
 };
