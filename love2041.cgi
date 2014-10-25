@@ -851,7 +851,24 @@ sub update_single_attribute {
 sub update_profile_text {
 	my $username = shift;
 	my $text = shift;
+	$text = clean_input($text);
 	update_single_attribute($username, "profile_text", $text);
+}
+
+sub clean_input {
+	my $text = shift;
+
+	print pre($text);
+
+	# Switch all of the angle brackets for lt and gt
+	$text =~ s/</&lt;/g;
+	$text =~ s/>/&gt;/g;
+
+	# We only want to allow some basic HTML tags, so we swap these back
+	$text =~ s/&lt;(strong|b|i|em)&gt;/<$1>/g;
+	$text =~ s/&lt;\/(strong|b|i|em)&gt;/<\/$1>/g;
+
+	return $text;
 }
 
 # Saves the user's details to the file
