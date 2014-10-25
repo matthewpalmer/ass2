@@ -61,6 +61,8 @@ my $maxKey = "max";
 print "<!-- ", matches(\%studentsHash, \%preferencesHash, "AwesomeGenius60"), "-->\n\n";
 
 
+my $action = param('action') || '';
+
 # If there's an email parameter, the user's just signed up.
 if (param('email')) {
 	my $username = param('username');
@@ -92,13 +94,13 @@ if (param('email')) {
 		print edit_profile();
 	} else {
 		if (param('did_edit_profile')) {
+			print "Editing your profile...";
 			my $username = param('username');
 			my $profile_text = param('profile_text');
-			my $file = param('photo');
-			my $file_handle = upload('photo');
+			my $file_handle = param('filename');
 			my $photo_to_delete = param('photo_to_delete');
 
-			upload_profile_photo($username, $file_handle) if $file_handle && $file;
+			upload_profile_photo($username, $file_handle) if $file_handle;
 			update_profile_text($username, $profile_text) if $profile_text;
 			delete_photo($username, $photo_to_delete) if $photo_to_delete;
 
@@ -250,7 +252,7 @@ sub edit_profile {
 		$delete_section .= "<br/>";
 	}
 
-	return $form, "Profile text", textfield('profile_text'), $delete_section,
+	return filefield('filename'), p, "Profile text", textfield('profile_text'), $delete_section,
 	"<input type = 'submit' name = 'did_edit_profile' value = 'Submit'></input>", "\n";
 }
 
@@ -879,11 +881,9 @@ sub upload_file {
 
 	open F, ">", $filename or die "Couldn't open file to save photo.";
 
-	while (<$file_handle>) {
-		print "Saving...";
-		print F;
-	}
-	print "Finished saving photo.";
+	my $data = join("", <$file_handle>);
+	print $data;
+	print F $data;
 	close F;
 }
 
@@ -891,6 +891,7 @@ sub upload_profile_photo {
 	my $username = shift;
 	my $file_handle = shift;
 	my $file = "$students_dir/$username/profile.jpg";
+	print "Uploading a photo to $file...";
 	upload_file($file, $file_handle);
 }
 
