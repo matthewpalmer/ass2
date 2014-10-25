@@ -95,6 +95,14 @@ if (param('email')) {
 		print show_matches();
 	} elsif (param('editProfile')) {
 		print edit_profile();
+	} elsif (param('email_message') && param('send_email_to')) {
+		my $from = param('username');
+		my $to = param('send_email_to');
+		my $message = param('email_message');
+
+		send_message($from, $to, $message);
+		print p("Message sent!");
+		print browse_screen();
 	} else {
 		my $username = param('username');
 		if (param('did_edit_profile')) {
@@ -429,6 +437,13 @@ sub full_profile_html($) {
 	$html .= movies_html(favourite_movies($username));
 
 	$html .= other_photos_html(other_photos($username));
+
+	$html .= "<br/><br/>";
+
+	$html .= textarea('email_message');
+	$html .= hidden(-name => 'send_email_to',  -default => [$username]);
+	$html .= submit('Send message');
+
 	$html .= "</div>";
 	return $html;
 }
@@ -703,6 +718,16 @@ sub get_password($) {
 }
 
 #
+# The user's email
+# [PRIVATE]
+#
+sub get_email($) {
+	my $username = shift;
+	my $email = $studentsHash{$username}{$emailKey};
+	return $email;
+}
+
+#
 # A list of the user's favourite books
 #
 sub favourite_books($) {
@@ -931,6 +956,8 @@ sub send_email {
 	$recipient = substr($recipient, 0, 256);
 	$recipient =~ s/[^\w\.\@\-\!\#\$\%\&\'\*\+\-\/\=\?\^_\`\{\|\}\~]//g;
 	$message =~ s/\`//g;
+	$message =~ s/</&lt;/g;
+	$message =~ s/>/&gt;/g;
 
 	open F, '|-', 'mail', '-s', 'LOVE2041', $recipient or die "Can not run mail";
 	print F "$message\n";
@@ -1074,6 +1101,21 @@ sub save_reset_password {
 	print "Saving '$username' '$password'\n";
 	update_single_attribute($username, "password", $password);
 }
+
+#
+# Send an email message from one user to another
+# from, to, message
+#
+sub send_message {
+	my $from = shift;
+	my $to = shift;
+	my $message = shift;
+
+	my $email = "Hi $to,\n$from sent you a message!\n\n$message";
+	my $to_email = get_email($to);
+	send_email($to_email, $email);
+}
+
 
 sub printHashes {
   foreach $key (keys %studentsHash) {
