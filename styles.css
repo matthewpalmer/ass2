@@ -82,6 +82,21 @@ img {
   cursor: pointer;
 }
 
+input[type='submit'] {
+  border: 1px solid #5E97E7;
+  display: inline-block;
+  width: 15%;
+  background-color: #5E97E7;
+  color: white;
+  border-radius: 4px;
+  line-height: 2;
+}
+
+input[type='submit']:hover {
+  background-color: #446FB3;
+  cursor: pointer;
+}
+
 /* Style the placeholders */
 ::-webkit-input-placeholder { line-height: 2; }
 ::-moz-placeholder { line-height: 2; } /* firefox 19+ */

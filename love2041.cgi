@@ -231,7 +231,7 @@ sub isViewingProfile {
 sub log_in_screen {
 	return start_form, "\n",
 	"Username", textfield('username'), "<br/>\n",
-	"Password", textfield('password'), "<br/>\n",
+	"Password", input({-name => 'password', -type => 'password'}), "<br/>\n",
 	submit('Log in'), "\n",
 	"<button name = 'signUp' value = 'true'>Sign Up</button>",
 	"<br/><br/>", "\n",
@@ -297,7 +297,7 @@ sub browse_screen {
 }
 
 sub edit_profile {
-	my $form .= "<p>Photo: <input type = 'file' name = 'photo'/></p>";
+	# my $form .= "<p>Photo: <input type = 'file' name = 'photo'/></p>";
 
 	my $delete_section = h3("Delete images") . p("Please select an image to delete");
 	my @photos = other_photos(param('username'));
@@ -307,9 +307,13 @@ sub edit_profile {
 		$delete_section .= "<br/>";
 	}
 
-	return filefield('filename'), p, "Profile text", textfield('profile_text'), $delete_section,
-	"<input type = 'submit' name = 'did_edit_profile' value = 'Submit'></input>", "<br/>", "<br/>",
+	return h1("Edit Profile"), h3("Profile Photo"), filefield('filename'), h3("Profile text"), textfield('profile_text'), $delete_section,
+	"<br/><br/>",
+	"<input type = 'submit' name = 'did_edit_profile' value = 'Submit' class = 'submitButton'></input>", "<br/>", "<br/>",
+	h1("Account Management"),
+	h3("Suspend Account"),
 	"<input type = 'submit' name = 'did_suspend_account' value = 'Suspend Account'/>", "<br/><br/>", "\n",
+	h3("Delete Account"),
 	"<input type = 'submit' name = 'did_delete_account' value = 'Delete Account'/>", "\n";
 }
 
