@@ -35,3 +35,80 @@ button:hover {
   background-color: #446FB3;
   cursor: pointer;
 }
+
+img {
+  max-width: 90%;
+}
+
+.loggedInHeader button {
+  display: inline-block;
+  width: 24%;
+  margin-left: 1%;
+}
+
+.search_area {
+  display: block;
+  margin-top: 5%;
+  margin-bottom: 5%;
+}
+
+.search_bar {
+  display: inline-block;
+
+  line-height: 2.5;
+  width: 80%;
+  border: 1px solid #5E97E7;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+
+.search_bar:focus {
+  outline: none;
+}
+
+.search_button {
+  border: 1px solid #5E97E7;
+  display: inline-block;
+  width: 15%;
+  background-color: #5E97E7;
+  color: white;
+  border-radius: 4px;
+  line-height: 2;
+}
+
+.search_button:hover {
+  background-color: #446FB3;
+  cursor: pointer;
+}
+
+/* Style the placeholders */
+::-webkit-input-placeholder { line-height: 2; }
+::-moz-placeholder { line-height: 2; } /* firefox 19+ */
+:-ms-input-placeholder { line-height: 2; } /* ie */
+input:-moz-placeholder { line-height: 2; }
+
+
+@media only screen and (min-width: 768px) {
+    /* tablets and desktop */
+
+}
+
+@media only screen and (max-width: 767px) {
+    /* phones */
+    body {
+      width: 100%;
+      padding-left: 5%;
+      padding-right: 5%;
+    }
+
+    .loggedInHeader button {
+      display: block;
+      width: 90%;
+      text-align: center;
+    }
+}
+
+@media only screen and (max-width: 767px) and (orientation: portrait) {
+    /* portrait phones */
+}

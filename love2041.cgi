@@ -81,7 +81,7 @@ if (param('email')) {
 	}
 } elsif (isLoggedIn()) {
 	print logged_in_header();
-	print "Welcome to LOVE2041\n";
+
 	my $searchTerm = searchPhrase();
 	my $viewingProfileOf = isViewingProfile();
 
@@ -146,7 +146,7 @@ sub search_results {
 }
 
 sub logged_in_header {
-	return logout_button(), search_field(), home_button(), matches_button(), edit_profile_button();
+	return "<div class = 'loggedInHeader'>", search_field(), home_button(), matches_button(), edit_profile_button(),  logout_button(), "</div>";
 }
 
 sub searchPhrase {
@@ -276,8 +276,10 @@ sub edit_profile {
 # Search box
 #
 sub search_field {
-	return start_form, "\n", textfield("search"), "\n",
-				 submit('Search'), "\n";
+	# return start_form, "<div class = 'search_area'>", textfield({-name => "search", -class => "search_bar"}), "\n",
+				 # submit('Search'), "</div>", end_form "\n";
+	return "<div class = 'search_area'>", start_form, "\n", textfield({-name => "search", -class => "search_bar", -placeholder => "Search for users..."}), "\n",
+				 submit({-name => 'Search', -class => 'search_button'}), "</div>", "\n";
 }
 
 #
