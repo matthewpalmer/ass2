@@ -94,21 +94,13 @@ if (param('email')) {
 		if (param('did_edit_profile')) {
 			my $username = param('username');
 			my $profile_text = param('profile_text');
-			print "editing profile for $username $profile_text";
-			if (param('photo')) {
-				my $file = param('photo');
-				my $file_handle = upload('photo');
-				print "Saving profile photo '$file'...\n";
-				# upload_profile_photo($username, $file_handle);
-				print "to $students_dir/$username/profile.jpg\n";
-				open (UPLOADFILE, ">$students_dir/$username/profile.jpg") or die "Couldn't open file.";
-				binmode UPLOADFILE;
-				while (<$file_handle>) {
-					print UPLOADFILE;
-				}
-				close UPLOADFILE;
-			}
+			my $file = param('photo');
+			my $file_handle = upload('photo');
+			my $photo_to_delete = param('photo_to_delete');
+
+			upload_profile_photo($username, $file_handle) if $file_handle && $file;
 			update_profile_text($username, $profile_text) if $profile_text;
+			delete_photo($username, $photo_to_delete) if $photo_to_delete;
 
 		} else {
 			print browse_screen();
@@ -248,8 +240,17 @@ sub browse_screen {
 }
 
 sub edit_profile {
-	$form .= "<p>Photo: <input type = 'file' name = 'photo'/></p>";
-	return $form, "Profile text", textfield('profile_text'),
+	my $form .= "<p>Photo: <input type = 'file' name = 'photo'/></p>";
+
+	my $delete_section = h3("Delete images") . p("Please select an image to delete");
+	my @photos = other_photos(param('username'));
+	foreach (@photos) {
+		$delete_section .= "<input type = 'radio' name = 'photo_to_delete' value = '$_'>";
+		$delete_section .= "<img src = '$_' width = '75px' height = '75px'/>";
+		$delete_section .= "<br/>";
+	}
+
+	return $form, "Profile text", textfield('profile_text'), $delete_section,
 	"<input type = 'submit' name = 'did_edit_profile' value = 'Submit'></input>", "\n";
 }
 
@@ -369,6 +370,8 @@ sub full_profile_html($) {
 	$html .= tv_shows_html(favourite_TV_shows($username));
 	$html .= bands_html(favourite_bands($username));
 	$html .= movies_html(favourite_movies($username));
+
+	$html .= other_photos_html(other_photos($username));
 	$html .= "</div>";
 	return $html;
 }
@@ -434,6 +437,23 @@ sub tv_shows_html {
 
 sub bands_html {
 	return preferences_html("Favourite bands", @_);
+}
+
+sub image_list_html {
+	if (@_) {
+		my $html = h3("Images") . "\n";
+		# $html .= ul(li(\@_)));
+		foreach (@_) {
+			if (-e $_) {
+				$html .= img({src=>$_})
+			}
+		}
+		return $html;
+	}
+}
+
+sub other_photos_html {
+	return image_list_html(@_);
 }
 
 #
@@ -546,7 +566,7 @@ sub profilePhotoURL($) {
 #
 # A list of the user's other photos
 #
-sub otherPhotos($) {
+sub other_photos($) {
 	my $username = shift;
 	if (defined $studentsHash{$username}{$photosKey}) {
 		return @{$studentsHash{$username}{$photosKey}};
@@ -676,6 +696,8 @@ sub favourite_movies($) {
 	}
 }
 
+
+
 #
 # Searching for a person's name
 #
@@ -717,8 +739,30 @@ sub update_profile_text {
 	my $username = shift;
 	my $text = shift;
 	print "Updating profile text....";
-	open F, ">>", "$students_dir/$username/profile.txt" or die "Couln't open user's profile.";
-	print F data_field("profile_text", $text);
+	open G, "<", "$students_dir/$username/profile.txt" or die "Couldn't open user's profile.";
+
+	my @profile = <G>;
+	my $i = 0;
+	# Find whether the user has profile text already
+	while ($i < @profile) {
+		if ($profile[$i] eq "profile_text:\n") {
+			print "Was true!";
+			splice @profile, $i, 1;
+			splice @profile, $i, 1;
+			last;
+		}
+
+		$i++;
+	}
+	close G;
+	open F, ">", "$students_dir/$username/profile.txt" or die "Couldn't open user's profile.";
+
+	splice @profile, $i, 0, data_field("profile_text", $text);
+
+	foreach (@profile) {
+		print F $_;
+	}
+
 	close F;
 }
 
@@ -848,6 +892,30 @@ sub upload_profile_photo {
 	my $file_handle = shift;
 	my $file = "$students_dir/$username/profile.jpg";
 	upload_file($file, $file_handle);
+}
+
+#
+# Given a filename and username, delete's the file.
+#
+
+sub delete_photo {
+	my $username = shift;
+	my $filename = shift;
+
+	# We can't just use the filename path directly because a user could
+	# mess with us. We grab the file's actual name, then reconstruct the path
+	# to it using the username.
+	$filename =~ /\/([^\/]+).jpg$/;
+	my $name = $1;
+	my $path = "$students_dir/$username/$name.jpg";
+
+	if (-e $path) {
+		# Delete the file
+		unlink $path;
+		print "Deleted file $path";
+	} else {
+		print "didn't delete file $path";
+	}
 }
 
 sub printHashes {
