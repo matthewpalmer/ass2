@@ -319,7 +319,7 @@ sub edit_profile {
 sub search_field {
 	# return start_form, "<div class = 'search_area'>", textfield({-name => "search", -class => "search_bar"}), "\n",
 				 # submit('Search'), "</div>", end_form "\n";
-	return "<div class = 'search_area'>", start_form, "\n", textfield({-name => "search", -class => "search_bar", -placeholder => "Search for users..."}), "\n",
+	return "<div class = 'search_area'>", start_form, "\n", textfield({-name => "search", -class => "search_bar", -placeholder => "Search for users...", -id => "search_field"}), "\n",
 				 submit({-name => 'Search', -class => 'search_button'}), "</div>", "\n";
 }
 

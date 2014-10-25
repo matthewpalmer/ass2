@@ -28,3 +28,8 @@ function logout(el) {
 function goHome() {
   document.location.reload();
 }
+
+window.onload = function() {
+  document.getElementById('search_field').value = "";
+  document.getElementById('search_field').content = "";
+};
