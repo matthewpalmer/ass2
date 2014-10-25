@@ -36,6 +36,11 @@ button:hover {
   cursor: pointer;
 }
 
+textarea {
+  width: 90%;
+
+}
+
 img {
   max-width: 90%;
 }
@@ -67,15 +72,15 @@ img {
   outline: none;
 }
 
-.search_button {
+/*.search_button {
   border: 1px solid #5E97E7;
   display: inline-block;
-  width: 15%;
+  width: auto;
   background-color: #5E97E7;
   color: white;
   border-radius: 4px;
   line-height: 2;
-}
+}*/
 
 .search_button:hover {
   background-color: #446FB3;
@@ -85,11 +90,12 @@ img {
 input[type='submit'] {
   border: 1px solid #5E97E7;
   display: inline-block;
-  width: 15%;
+  min-width: 18%;
   background-color: #5E97E7;
   color: white;
   border-radius: 4px;
   line-height: 2;
+  -webkit-appearance: none;
 }
 
 input[type='submit']:hover {
@@ -113,8 +119,8 @@ input:-moz-placeholder { line-height: 2; }
     /* phones */
     body {
       width: 100%;
-      padding-left: 5%;
-      padding-right: 5%;
+      padding-left: 2%;
+      padding-right: 2%;
     }
 
     .loggedInHeader button {
@@ -122,6 +128,16 @@ input:-moz-placeholder { line-height: 2; }
       width: 90%;
       text-align: center;
       line-height: 3;
+    }
+
+    .search_bar {
+      width: 87%;
+      margin-bottom: 3%;
+    }
+
+    input[type='submit'] {
+      width: 90%;
+      margin-bottom: 5%;
     }
 }
 

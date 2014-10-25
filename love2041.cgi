@@ -136,9 +136,8 @@ if (param('email')) {
 	 	print p("Please provide your username and password.");
 	}
 } else {
-	print "Else way up here\n";
 	if (param('reset_password') && param('reset_username')) {
-		print "Resetting password now";
+		print "Resetting password now...";
 		reset_password(param('reset_username'));
 	} elsif (param('reset')) {
 		print "we have a reset request";
@@ -216,7 +215,7 @@ sub isCorrectPassword {
 			return 1;
 		}
 	} else {
-		print "password not defined for '$username'\n";
+		# print "password not defined for '$username'\n";
 	}
 
 	return 0;
@@ -444,6 +443,7 @@ sub full_profile_html($) {
 
 	$html .= "<br/><br/>";
 
+	$html .= h3("Send message");
 	$html .= textarea('email_message');
 	$html .= hidden(-name => 'send_email_to',  -default => [$username]);
 	$html .= submit('Send message');
