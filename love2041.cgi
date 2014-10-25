@@ -25,6 +25,7 @@ print page_header();
 $debug = 1;
 $students_dir = "./students";
 $suspended_dir = "./suspended";
+$deleted_dir = "./deleted";
 my $scripts_file = "scripts.js";
 
 my ($studentsRef, $preferencesRef) = loadHashes();
@@ -94,9 +95,9 @@ if (param('email')) {
 	} elsif (param('editProfile')) {
 		print edit_profile();
 	} else {
+		my $username = param('username');
 		if (param('did_edit_profile')) {
 			print "Editing your profile...";
-			my $username = param('username');
 			my $profile_text = param('profile_text');
 			my $file_handle = param('filename');
 			my $photo_to_delete = param('photo_to_delete');
@@ -106,9 +107,11 @@ if (param('email')) {
 			delete_photo($username, $photo_to_delete) if $photo_to_delete;
 
 		} elsif (param('did_suspend_account')) {
-			my $username = param('username');
 			suspend_user($username);
 			print p("Account suspended.");
+		} elsif (param('did_delete_account')) {
+			delete_user($username);
+			print p("Account deleted.");
 		} else {
 			print browse_screen();
 		}
@@ -198,7 +201,7 @@ sub log_in_screen {
 	submit('Log in'), "\n",
 	"<button name = 'signUp' value = 'true'>Sign Up</button>",
 	"<br/><br/>", "\n",
-	"<button name = 'recover_account' value = 'true'>Recover this user</button>",
+	"<button name = 'recover_account' value = 'true'>Recover account</button>",
 	end_form, "\n";
 }
 
@@ -269,7 +272,8 @@ sub edit_profile {
 
 	return filefield('filename'), p, "Profile text", textfield('profile_text'), $delete_section,
 	"<input type = 'submit' name = 'did_edit_profile' value = 'Submit'></input>", "<br/>", "<br/>",
-	"<input type = 'submit' name = 'did_suspend_account' value = 'Suspend Account'/>", "\n";
+	"<input type = 'submit' name = 'did_suspend_account' value = 'Suspend Account'/>", "<br/><br/>", "\n",
+	"<input type = 'submit' name = 'did_delete_account' value = 'Delete Account'/>", "\n";
 }
 
 #
@@ -964,6 +968,16 @@ sub unsuspend_user {
 	}
 }
 
+
+#
+# Delete a user
+#
+sub delete_user {
+	my $username = shift;
+	if (-d "$students_dir/$username") {
+		rename("$students_dir/$username", "$deleted_dir/$username");
+	}
+}
 
 sub printHashes {
   foreach $key (keys %studentsHash) {
