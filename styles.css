@@ -106,6 +106,7 @@ input:-moz-placeholder { line-height: 2; }
       display: block;
       width: 90%;
       text-align: center;
+      line-height: 3;
     }
 }
 

@@ -304,8 +304,12 @@ sub edit_profile_button {
 # HTML placed at top of every screen
 #
 sub page_header {
+	# return header, "<html><head><title>LOVE2041</title><style src = 'styles.css'>",
+	# "<meta name = 'viewport' content = 'width=device-width'/></head><body>",
+	# "<center><h1>LOVE2041</h1></center>";
 	return header,
    		start_html("-title"=>"LOVE2041", -style=>{'src'=>"styles.css"}),
+   		'<meta name="viewport" content="width=device-width"/>', # Responsive design
  			center(h1("LOVE2041"));
 }
 
