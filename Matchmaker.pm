@@ -59,6 +59,13 @@ sub matches {
   my $username = shift;
   my $desperationLevel = shift || 0;
 
+  if ($username) {
+    print "username exists $username";
+  } else {
+    print "usernoame no eway";
+  }
+  return if (!$username);
+
   # Height matching
   my $loHeight = $preferencesHash{$username}{$heightKey}{$minKey};
   my $hiHeight = $preferencesHash{$username}{$heightKey}{$maxKey};

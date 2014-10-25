@@ -24,6 +24,7 @@ print page_header();
 # some globals used through the script
 $debug = 1;
 $students_dir = "./students";
+$suspended_dir = "./suspended";
 my $scripts_file = "scripts.js";
 
 my ($studentsRef, $preferencesRef) = loadHashes();
@@ -58,7 +59,7 @@ my $maxKey = "max";
 
 # printHashes();
 
-print "<!-- ", matches(\%studentsHash, \%preferencesHash, "AwesomeGenius60"), "-->\n\n";
+# print "<!-- ", matches(\%studentsHash, \%preferencesHash, "AwesomeGenius60"), "-->\n\n";
 
 
 my $action = param('action') || '';
@@ -104,12 +105,24 @@ if (param('email')) {
 			update_profile_text($username, $profile_text) if $profile_text;
 			delete_photo($username, $photo_to_delete) if $photo_to_delete;
 
+		} elsif (param('did_suspend_account')) {
+			my $username = param('username');
+			suspend_user($username);
+			print p("Account suspended.");
 		} else {
 			print browse_screen();
 		}
 	}
 } elsif (param('signUp')) {
-		print sign_up_form();
+	print sign_up_form();
+} elsif (param('recover_account')) {
+	my $username = param('username');
+	if ($username && param('password')) {
+		unsuspend_user($username);
+		print p("Unsuspended $username. Please log in again to access the site.");
+	} else {
+	 	print p("Please provide your username and password.");
+	}
 } else {
 	print log_in_screen();
 }
@@ -182,8 +195,10 @@ sub log_in_screen {
 	return start_form, "\n",
 	"Username", textfield('username'), "<br/>\n",
 	"Password", textfield('password'), "<br/>\n",
-	"<button name = 'signUp' value = 'true'>Sign Up</button>",
 	submit('Log in'), "\n",
+	"<button name = 'signUp' value = 'true'>Sign Up</button>",
+	"<br/><br/>", "\n",
+	"<button name = 'recover_account' value = 'true'>Recover this user</button>",
 	end_form, "\n";
 }
 
@@ -253,7 +268,8 @@ sub edit_profile {
 	}
 
 	return filefield('filename'), p, "Profile text", textfield('profile_text'), $delete_section,
-	"<input type = 'submit' name = 'did_edit_profile' value = 'Submit'></input>", "\n";
+	"<input type = 'submit' name = 'did_edit_profile' value = 'Submit'></input>", "<br/>", "<br/>",
+	"<input type = 'submit' name = 'did_suspend_account' value = 'Suspend Account'/>", "\n";
 }
 
 #
@@ -918,6 +934,30 @@ sub delete_photo {
 		print "didn't delete file $path";
 	}
 }
+
+#
+# Given a username, suspend that account.
+# We do this by moving the directory into a 'suspended' folder.
+#
+sub suspend_user {
+	my $username = shift;
+
+	if (-d "$students_dir/$username") {
+		rename ("$students_dir/$username", "$suspended_dir/$username");
+	}
+}
+
+#
+# Given a username, unsuspends that account.
+#
+sub unsuspend_user {
+	my $username = shift;
+
+	if (-d "$suspended_dir/$username") {
+		rename("$suspended_dir/$username", "$students_dir/$username");
+	}
+}
+
 
 sub printHashes {
   foreach $key (keys %studentsHash) {
