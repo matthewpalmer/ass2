@@ -238,17 +238,20 @@ sub isViewingProfile {
 }
 
 sub log_in_screen {
-	return start_form, "\n",
-	"Username", textfield('username'), "<br/>\n",
-	"Password", input({-name => 'password', -type => 'password'}), "<br/>\n",
-	submit('Log in'), "\n",
-	"<button name = 'signUp' value = 'true'>Sign Up</button>",
+	return "<div class = 'login'>", start_form, "\n",
+	p("Username"), textfield('username'), "<br/>\n",
+	p("Password"), input({-name => 'password', -type => 'password'}), "<br/>\n",
+	submit({ -value => 'Log in', -class => 'loginButton'}), "\n",
+	"<br/>",
+	"<button name = 'signUp' value = 'true' class = 'signUpButton'>Sign Up</button>",
 	"<br/><br/>", "\n",
-	"<button name = 'recover_account' value = 'true'>Renew suspended account.</button>",
+	"<button name = 'recover_account' value = 'true' class = 'renew'>Renew suspended account.</button>",
 	"<br/>", "<br/>", "\n",
+	"<div class = 'resetPassword'>",
+	"<strong>Reset password</strong>",
 	p("Username"), textfield('reset_username'),
-	"<button name = 'reset_password' value = 'true'>Reset password.</button>",
-	end_form, "\n";
+	"<button name = 'reset_password' value = 'true'>Reset password</button>", "</div>",
+	end_form, "\n", "</div>";
 }
 
 sub sign_up_form {
@@ -322,7 +325,7 @@ sub edit_profile {
 	h3("Hair Colour"), textfield('hair_colour'),
 	h3("Weight"), textfield('weight'),
 	h3("Birthdate"), textfield('age'),
-	h3("Height"), textfield('height'),
+	h3("Height"), textfield('height'), "<br/>", "<br/>",
 	"<input type = 'submit' name = 'did_edit_profile' value = 'Submit' class = 'submitButton'></input>", "<br/>", "<br/>",
 	h1("Account Management"),
 	h3("Suspend Account"),
@@ -807,7 +810,7 @@ sub searchData($) {
 	my @results = ();
 
 	foreach $key (keys %studentsHash) {
-		if ($key =~ /$searchTerm/) {
+		if ($key =~ /$searchTerm/i) {
 			push @results, $key;
 		}
 	}
@@ -1045,7 +1048,7 @@ sub upload_profile_photo {
 	my $username = shift;
 	my $file_handle = shift;
 	my $file = "$students_dir/$username/profile.jpg";
-	print "Uploading a photo to $file...";
+	print "Uploaded photo.";
 	upload_file($file, $file_handle);
 }
 

@@ -103,12 +103,70 @@ input[type='submit']:hover {
   cursor: pointer;
 }
 
-/* Style the placeholders */
-::-webkit-input-placeholder { line-height: 2; }
-::-moz-placeholder { line-height: 2; } /* firefox 19+ */
-:-ms-input-placeholder { line-height: 2; } /* ie */
-input:-moz-placeholder { line-height: 2; }
+.login {
+  margin-left: 20%;
+  padding-left: 10%;
+  padding-top: 10%;
+  padding-bottom: 10%;
+  border-radius: 4px;
+}
 
+.login p {
+  margin-bottom: 0%;
+  color: #12151C;
+}
+
+.login input[type='text'], .login input[type='password'] {
+  width: 60%;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  border:solid 1px #5E97E7;
+  padding: 5px;
+}
+
+.login input[type='text']:focus, .login input[type='password']:focus {
+  border:solid 1px #446FB3;
+  outline: none;
+}
+
+.login input[type='submit'] {
+  margin-top: 5%;
+}
+
+.renew {
+  background-color: rgba(0,0,0,0);
+  color: gray;
+  font-style: italic;
+  text-decoration: underline;
+  margin-left: 12%;
+}
+
+.renew:hover {
+  background-color: gainsboro;
+  color: gray;
+}
+
+.loginButton {
+  width: 62%;
+}
+
+.signUpButton {
+  background-color: gray;
+  text-align: center;
+  width: 20%;
+  margin-left: 20%;
+  margin-top: 2%;
+}
+
+.signUpButton:hover {
+  background-color: darkgray;
+}
+
+.resetPassword {
+  /*border-top: 1px solid darkgray;*/
+  margin-top: 10%;
+}
 
 @media only screen and (min-width: 768px) {
     /* tablets and desktop */
@@ -139,8 +197,32 @@ input:-moz-placeholder { line-height: 2; }
       width: 90%;
       margin-bottom: 5%;
     }
+
+    .login {
+      margin-left: 2%;
+
+    }
+
+    .signUpButton {
+      width: 90%;
+      margin-left: 0%;
+    }
+
+    .renew {
+      margin-left: 25%;
+    }
+
+    .login input[type='text'], .login input[type='password'] {
+      width: 90%;
+    }
 }
 
 @media only screen and (max-width: 767px) and (orientation: portrait) {
     /* portrait phones */
 }
+
+/* Style the placeholders */
+::-webkit-input-placeholder { line-height: 2; }
+::-moz-placeholder { line-height: 2; } /* firefox 19+ */
+:-ms-input-placeholder { line-height: 2; } /* ie */
+input:-moz-placeholder { line-height: 2; }
