@@ -106,15 +106,25 @@ if (param('email')) {
 	} else {
 		my $username = param('username');
 		if (param('did_edit_profile')) {
-			print "Editing your profile...";
+			print p("Profile updated.");
 			my $profile_text = param('profile_text');
 			my $file_handle = param('filename');
 			my $photo_to_delete = param('photo_to_delete');
 
-			upload_profile_photo($username, $file_handle) if $file_handle;
-			update_profile_text($username, $profile_text) if $profile_text;
-			delete_photo($username, $photo_to_delete) if $photo_to_delete;
+			my $degree = param('degree');
+			my $hair_colour = param('hair_colour');
+			my $weight = param('weight');
+			my $birthdate = param('birthdate');
+			my $height = param('height');
 
+			upload_profile_photo($username, $file_handle) if $file_handle;
+			delete_photo($username, $photo_to_delete) if $photo_to_delete;
+			update_profile_text($username, $profile_text) if $profile_text;
+			update_degree($username, $degree) if $degree;
+			update_hair_colour($username, $hair_colour) if $hair_colour;
+			update_weight($username, $weight) if $weight;
+			update_birthdate($username, $birthdate) if $birthdate;
+			update_height($username, $height) if $height;
 		} elsif (param('did_suspend_account')) {
 			suspend_user($username);
 			print p("Account suspended.");
@@ -308,6 +318,11 @@ sub edit_profile {
 
 	return h1("Edit Profile"), h3("Profile Photo"), filefield('filename'), h3("Profile text"), textfield('profile_text'), $delete_section,
 	"<br/><br/>",
+	h3("Degree"), textfield('degree'),
+	h3("Hair Colour"), textfield('hair_colour'),
+	h3("Weight"), textfield('weight'),
+	h3("Birthdate"), textfield('age'),
+	h3("Height"), textfield('height'),
 	"<input type = 'submit' name = 'did_edit_profile' value = 'Submit' class = 'submitButton'></input>", "<br/>", "<br/>",
 	h1("Account Management"),
 	h3("Suspend Account"),
@@ -859,10 +874,29 @@ sub update_profile_text {
 	update_single_attribute($username, "profile_text", $text);
 }
 
+# Takes username, new value for degree
+sub update_degree {
+	update_single_attribute(shift, $degreeKey, clean_input(shift));
+}
+
+sub update_hair_colour {
+	update_single_attribute(shift, $hairColorKey, clean_input(shift));
+}
+
+sub update_birthdate {
+	update_single_attribute(shift, $birthdateKey, clean_input(shift));
+}
+
+sub update_weight {
+	update_single_attribute(shift, $weightKey, clean_input(shift));
+}
+
+sub update_height {
+	update_single_attribute(shift, $heightKey, clean_input(shift));
+}
+
 sub clean_input {
 	my $text = shift;
-
-	print pre($text);
 
 	# Switch all of the angle brackets for lt and gt
 	$text =~ s/</&lt;/g;
