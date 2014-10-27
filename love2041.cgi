@@ -109,6 +109,7 @@ if (param('email')) {
 			print p("Profile updated.");
 			my $profile_text = param('profile_text');
 			my $file_handle = param('filename');
+			my $other_photo_filehandle = param('other_photo_filename');
 			my $photo_to_delete = param('photo_to_delete');
 
 			my $degree = param('degree');
@@ -118,6 +119,7 @@ if (param('email')) {
 			my $height = param('height');
 
 			upload_profile_photo($username, $file_handle) if $file_handle;
+			upload_other_photo($username, $other_photo_filehandle) if $other_photo_filehandle;
 			delete_photo($username, $photo_to_delete) if $photo_to_delete;
 			update_profile_text($username, $profile_text) if $profile_text;
 			update_degree($username, $degree) if $degree;
@@ -319,13 +321,16 @@ sub edit_profile {
 		$delete_section .= "<br/>";
 	}
 
-	return h1("Edit Profile"), h3("Profile Photo"), filefield('filename'), h3("Profile text"), textfield('profile_text'), $delete_section,
+	return h1("Edit Profile"), h3("Profile Photo"), filefield('filename'),
+	h3("Profile text"), textfield('profile_text'), $delete_section,
 	"<br/><br/>",
 	h3("Degree"), textfield('degree'),
 	h3("Hair Colour"), textfield('hair_colour'),
 	h3("Weight"), textfield('weight'),
 	h3("Birthdate"), textfield('age'),
-	h3("Height"), textfield('height'), "<br/>", "<br/>",
+	h3("Height"), textfield('height'),
+	h3("Other photos"), filefield('other_photo_filename'),
+	"<br/>", "<br/>",
 	"<input type = 'submit' name = 'did_edit_profile' value = 'Submit' class = 'submitButton'></input>", "<br/>", "<br/>",
 	h1("Account Management"),
 	h3("Suspend Account"),
@@ -1030,7 +1035,7 @@ sub random_letters {
 }
 
 #
-# Given a file name and file handle, saves that file as the user's profile
+# Given a file name and file handle, saves that file as the user's profile photo
 #
 sub upload_file {
 	my $filename = shift;
@@ -1039,17 +1044,45 @@ sub upload_file {
 	open F, ">", $filename or die "Couldn't open file to save photo.";
 
 	my $data = join("", <$file_handle>);
-	print $data;
 	print F $data;
 	close F;
+
+	print "Uploaded photo.";
 }
 
 sub upload_profile_photo {
 	my $username = shift;
 	my $file_handle = shift;
 	my $file = "$students_dir/$username/profile.jpg";
-	print "Uploaded photo.";
 	upload_file($file, $file_handle);
+}
+
+sub upload_other_photo {
+	my $username = shift;
+	my $file_handle = shift;
+
+	my @other_photos = other_photos($username);
+	my $i = 0;
+
+	# Get the last other photo filename in the directory
+	my $lastFile = $other_photos[@other_photos - 1];
+	print "last file '$lastFile'\n";
+	# Photo filenames are of the format photo01.jpg (for example)
+	$lastFile =~ /([0-9]{2})\.jpg$/;
+	my $num = $1 + 1;
+	print "num is '$num'\n";
+
+	my $new_filename = "$students_dir/$username/photo";
+
+	if ($num < 10) {
+		$new_filename .= "0$num";
+	} else {
+		$new_filename .= $num;
+	}
+
+	$new_filename .= ".jpg";
+	print "fn '$new_filename'\n";
+	upload_file($new_filename, $file_handle);
 }
 
 #
