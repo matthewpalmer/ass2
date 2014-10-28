@@ -4,31 +4,49 @@
 # as a starting point for COMP2041/9041 assignment 2
 # http://cgi.cse.unsw.edu.au/~cs2041/assignments/LOVE2041/
 
+
+### Structure
+# This code is structured in the following way:
+# 	1. Setup
+# 	2. Determining state
+# 	3. HTML display
+# 	4. Data retrieval
+# 	5. Data updating
+#
+# You can easily navigate between the sections by search for 'Section X'
+
+# Section 1 — Set up
+# ##################
+
 use FindBin qw( $RealBin );
 use lib $RealBin;
 
+# Import my modules
 use ProfileImporter qw(loadHashes);
 use Matchmaker qw(matches);
 
+# Import core modules
 use CGI qw/:all/;
 use CGI::Carp qw(fatalsToBrowser warningsToBrowser);
 use Data::Dumper;
 use List::Util qw/min max/;
 use Scalar::Util qw(looks_like_number);
 
+# Config
 warningsToBrowser(1);
 
 # print start of HTML ASAP to assist debugging if there is an error in the script
 print page_header();
 
-# some globals used through the script
+# Globals used throughout the script
 $debug = 1;
 $students_dir = "./students";
 $suspended_dir = "./suspended";
 $deleted_dir = "./deleted";
 $reset_file = "./reset.txt";
-my $scripts_file = "scripts.js";
+$scripts_file = "scripts.js";
 
+# Hashes to store our data
 my ($studentsRef, $preferencesRef) = loadHashes();
 my %studentsHash = %{$studentsRef};
 my %preferencesHash = %{$preferencesRef};
@@ -59,12 +77,14 @@ my $hairColorPrefKey = "hair_colours";
 my $minKey = "min";
 my $maxKey = "max";
 
-# printHashes();
-
-# print "<!-- ", matches(\%studentsHash, \%preferencesHash, "AwesomeGenius60"), "-->\n\n";
 
 
-my $action = param('action') || '';
+# Section 2 — Determine state
+#############################
+
+# Go into our state decider.
+# This re-routes our display and handling of data
+# based on the parameters passed with the request.
 
 # If there's an email parameter, the user's just signed up.
 if (param('email')) {
@@ -88,14 +108,19 @@ if (param('email')) {
 	my $viewingProfileOf = isViewingProfile();
 
 	if ($viewingProfileOf) {
+		# Viewing the profile of a specific user
 		print display_profile($viewingProfileOf);
 	} elsif ($searchTerm) {
+		# Searched for a username
 		print search_results($searchTerm);
 	} elsif (param('matches')) {
+		# Viewing preference matches
 		print show_matches();
 	} elsif (param('editProfile')) {
+		# Editing my profile
 		print edit_profile();
 	} elsif (param('email_message') && param('send_email_to')) {
+		# Sending a message to the owner of a profile
 		my $from = param('username');
 		my $to = param('send_email_to');
 		my $message = param('email_message');
@@ -104,8 +129,11 @@ if (param('email')) {
 		print p("Message sent!");
 		print browse_screen();
 	} else {
+		# User not logged in.
+
 		my $username = param('username');
 		if (param('did_edit_profile')) {
+			# Just finished editing our profile. We need to update the data stores.
 			print p("Profile updated.");
 			my $profile_text = param('profile_text');
 			my $file_handle = param('filename');
@@ -128,18 +156,23 @@ if (param('email')) {
 			update_birthdate($username, $birthdate) if $birthdate;
 			update_height($username, $height) if $height;
 		} elsif (param('did_suspend_account')) {
+			# Suspended our account
 			suspend_user($username);
 			print p("Account suspended.");
 		} elsif (param('did_delete_account')) {
+			# Deleted our account
 			delete_user($username);
 			print p("Account deleted.");
 		} else {
+			# Home page
 			print browse_screen();
 		}
 	}
 } elsif (param('signUp')) {
+	# Sign up
 	print sign_up_form();
 } elsif (param('recover_account')) {
+	# Unsuspending an account
 	my $username = param('username');
 	if ($username && param('password')) {
 		unsuspend_user($username);
@@ -148,6 +181,7 @@ if (param('email')) {
 	 	print p("Please provide your username and password.");
 	}
 } else {
+	# Resetting a password
 	if (param('reset_password') && param('reset_username')) {
 		print "Resetting password now...";
 		reset_password(param('reset_username'));
@@ -159,44 +193,12 @@ if (param('email')) {
 		print "Saving reset password\n";
 		save_reset_password(param('username_for_reset'), param('password_for_reset'));
 	} else {
+		# Not logged in. Display the log in page.
 		print log_in_screen();
 	}
 }
 
-print page_trailer();
-exit 0;
-
-#
-# Gets the HTML to reset a password
-#
-sub reset_html {
-	my $username = shift;
-	chomp $username;
-	return start_form , p("Password") , textfield("password_for_reset"),
-				 hidden(-name => 'username_for_reset',  -default => [$username]),
-				 submit("Submit"), end_form;
-}
-
-
-#
-# Gets the HTML search results
-#
-
-sub search_results {
-	my $searchTerm = shift;
-	print p("Searching for '$searchTerm'...<br/>\n");
-	my @results = searchData($searchTerm);
-	my $html = ul(li(\@results)) . "\n";
-	foreach $user (@results) {
-		$html .= profile_snippet_html($user);
-	}
-	return $html;
-}
-
-sub logged_in_header {
-	return "<div class = 'loggedInHeader'>", search_field(), home_button(), matches_button(), edit_profile_button(),  logout_button(), "</div>";
-}
-
+# Get the search phrase if there is one, false otherwise.
 sub searchPhrase {
 	if (defined param('search')) {
 		return param('search');
@@ -239,6 +241,81 @@ sub isViewingProfile {
 	return param('profile');
 }
 
+print page_trailer();
+exit 0;
+
+
+
+# Section 3 — HTML display
+# ########################
+
+#
+# Gets the HTML to reset a password
+#
+sub reset_html {
+	my $username = shift;
+	chomp $username;
+	return start_form , p("Password") , textfield("password_for_reset"),
+				 hidden(-name => 'username_for_reset',  -default => [$username]),
+				 submit("Submit"), end_form;
+}
+
+
+#
+# Gets the HTML search results
+#
+
+sub search_results {
+	my $searchTerm = shift;
+	print p("Searching for '$searchTerm'...<br/>\n");
+	my @results = searchData($searchTerm);
+	my $html = ul(li(\@results)) . "\n";
+	foreach $user (@results) {
+		$html .= profile_snippet_html($user);
+	}
+	return $html;
+}
+
+# HTML placed at top of every screen
+sub page_header {
+	# return header, "<html><head><title>LOVE2041</title><style src = 'styles.css'>",
+	# "<meta name = 'viewport' content = 'width=device-width'/></head><body>",
+	# "<center><h1>LOVE2041</h1></center>";
+	return header,
+   		start_html("-title"=>"LOVE2041", -style=>{'src'=>"styles.css"}),
+   		'<meta name="viewport" content="width=device-width"/>', # Responsive design
+ 			center(h1("LOVE2041"));
+}
+
+#
+# HTML placed at bottom of every screen
+# It includes all supplied parameter values as a HTML comment
+# if global variable $debug is set
+#
+sub page_trailer {
+	my $html = "";
+	$html .= join("", map("<!-- $_=".param($_)." -->\n", param())) if $debug;
+
+	$html .= "<script>";
+	$html .= scripts();
+	$html .= "</script>";
+	$html .= hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret");
+	$html .= hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret");
+	$html .= end_form . "\n";
+	$html .= end_html;
+	return $html;
+}
+
+#
+# The header for logged in users.
+#
+sub logged_in_header {
+	return "<div class = 'loggedInHeader'>", search_field(), home_button(), matches_button(), edit_profile_button(),  logout_button(), "</div>";
+}
+
+#
+# Our log in page
+#
 sub log_in_screen {
 	return "<div class = 'login'>", start_form, "\n",
 	p("Username"), textfield('username'), "<br/>\n",
@@ -256,6 +333,9 @@ sub log_in_screen {
 	end_form, "\n", "</div>";
 }
 
+#
+# Our sign up form
+#
 sub sign_up_form {
 	return start_form, "\n",
 	"Username", textfield('username'), "<br/>\n",
@@ -265,12 +345,18 @@ sub sign_up_form {
 	end_form, "\n";
 }
 
+#
+# Display of full profiles
+#
 sub display_profile {
 	my $username = shift;
 	my $html = full_profile_html($username);
 	print $html;
 }
 
+#
+# The matches for this user
+#
 sub show_matches {
 	my $username = param('username');
 	my $value = param('matches');
@@ -282,8 +368,11 @@ sub show_matches {
 	print $html;
 }
 
-
-
+#
+# The 'news feed' style home page.
+# Lists all of the users with a photo and minimal information.
+# Includes links to their full profiles.
+#
 sub browse_screen {
 	my $n = param('n') || 0;
 	my @students = sort keys %studentsHash;
@@ -310,6 +399,9 @@ sub browse_screen {
 		p, "\n";
 }
 
+#
+# Edit profile page
+#
 sub edit_profile {
 	# my $form .= "<p>Photo: <input type = 'file' name = 'photo'/></p>";
 
@@ -364,46 +456,16 @@ sub edit_profile_button {
 }
 
 #
-# HTML production
-# ===============
-
+# Log out button
 #
-# HTML placed at top of every screen
-#
-sub page_header {
-	# return header, "<html><head><title>LOVE2041</title><style src = 'styles.css'>",
-	# "<meta name = 'viewport' content = 'width=device-width'/></head><body>",
-	# "<center><h1>LOVE2041</h1></center>";
-	return header,
-   		start_html("-title"=>"LOVE2041", -style=>{'src'=>"styles.css"}),
-   		'<meta name="viewport" content="width=device-width"/>', # Responsive design
- 			center(h1("LOVE2041"));
-}
-
-#
-# HTML placed at bottom of every screen
-# It includes all supplied parameter values as a HTML comment
-# if global variable $debug is set
-#
-sub page_trailer {
-	my $html = "";
-	$html .= join("", map("<!-- $_=".param($_)." -->\n", param())) if $debug;
-
-	$html .= "<script>";
-	$html .= scripts();
-	$html .= "</script>";
-	$html .= hidden(-name => 'username',  -default => [param('username')], -id => "usernameSecret");
-	$html .= hidden(-name => 'password',  -default => [param('password')], -id => "passwordSecret");
-	$html .= end_form . "\n";
-	$html .= end_html;
-	return $html;
-}
-
 sub logout_button {
 	my $html = "<button onclick = 'logout(this)'>Log out</button>";
 	return $html;
 }
 
+#
+# Home button
+#
 sub home_button {
 	my $html = "<button onclick = 'goHome()'>Home</button>";
 	return $html;
@@ -476,7 +538,9 @@ sub full_profile_html($) {
 }
 
 #
-# HTML for a snippet of the person's profile
+# HTML for a snippet of the person's profile.
+# Used whenever we display a list of profiles.
+# (e.g. main feed, search results, matches)
 #
 sub profile_snippet_html($) {
 	# Username
@@ -538,6 +602,9 @@ sub bands_html {
 	return preferences_html("Favourite bands", @_);
 }
 
+#
+# Generic function to display a list of images
+#
 sub image_list_html {
 	if (@_) {
 		my $html = h3("Images") . "\n";
@@ -551,6 +618,9 @@ sub image_list_html {
 	}
 }
 
+#
+# Display a list of the user's other photos
+#
 sub other_photos_html {
 	return image_list_html(@_);
 }
@@ -619,21 +689,31 @@ sub age_html($) {
 	return attribute_html($ageKey, $value);
 }
 
+#
+# HTML to display the user's gender
+# Takes the gender
+#
 sub gender_html($) {
 	my $genderKey = "Gender";
 	my $value = shift;
 	return attribute_html($genderKey, $value);
 }
 
+#
+# HTML to display the user's profile text
+# Takes the profile text
+#
 sub profile_text_html($) {
 	my $textKey = "Profile text";
 	my $value = shift;
 	return attribute_html($textKey, $value);
 }
 
+#
 # Displays the list of matches for a user.
 # Takes the number of matches to return (< matches.length)
 # and the list of matches.
+#
 sub match_html {
 	my $limit = shift;
 	my @matches = @_;
@@ -649,9 +729,8 @@ sub match_html {
 	return $html;
 }
 
-#
-# Data Access
-# ===========
+# Section 4 — Data Retrieval
+# ##########################
 
 #
 # The user's profile photo URL
@@ -805,8 +884,6 @@ sub favourite_movies($) {
 	}
 }
 
-
-
 #
 # Searching for a person's name
 #
@@ -823,12 +900,16 @@ sub searchData($) {
 	return @results;
 }
 
+# Section 5 — Data updating
+# #########################
+
 #
 # User account updating and creation.
 #
-
+#
 # Register a new user.
 # Takes username, password, and email.
+#
 sub register {
 	my $username = shift;
 	my $password = shift;
@@ -874,7 +955,9 @@ sub update_single_attribute {
 	close F;
 }
 
+#
 # Update profile text
+#
 sub update_profile_text {
 	my $username = shift;
 	my $text = shift;
@@ -882,7 +965,9 @@ sub update_profile_text {
 	update_single_attribute($username, "profile_text", $text);
 }
 
-# Takes username, new value for degree
+#
+# A series of functions to update simple attributes about the user
+#
 sub update_degree {
 	update_single_attribute(shift, $degreeKey, clean_input(shift));
 }
@@ -903,6 +988,9 @@ sub update_height {
 	update_single_attribute(shift, $heightKey, clean_input(shift));
 }
 
+#
+# Sanitizes input to help prevent XSS attacks.
+#
 sub clean_input {
 	my $text = shift;
 
@@ -917,7 +1005,9 @@ sub clean_input {
 	return $text;
 }
 
+#
 # Saves the user's details to the file
+#
 sub save_data {
 	my $username = shift;
 	my $password = shift;
@@ -942,14 +1032,19 @@ sub save_data {
 	}
 }
 
+#
+# Get a nicely formatted version of a key-value pair
+#
 sub data_field {
 	my $key = shift;
 	my $value = shift;
 	return "$key:\n        $value\n";
 }
 
+#
 # Validate whether the user trying to be registered is valid.
 # Takes username, password, and email.
+#
 sub valid_user {
 	my ($username, $password, $email) = (shift, shift, shift);
 
@@ -966,34 +1061,48 @@ sub valid_user {
 	return 1;
 }
 
+#
 # Usernames have to be 1-20 characters long, containing letters, numbers
 # and underscores only.
+#
 sub valid_username {
 	my $username = shift;
 	return 1 if ($username =~ /[A-Za-z0-9_]{1,20}/);
 }
 
+#
 # Passwords have to be 1-128 characters long.
+#
 sub valid_password {
 	return 1 if (shift =~ /.{1,128}/);
 }
 
+#
 # Emails have to be of a standard form.
+#
 sub valid_email {
 	return 1 if (shift =~ /^\w+@\w+(\.\w+)+/);
 }
 
+#
 # Checks whether the given username already exists
+#
 sub user_exists {
 	my $username = shift;
 	return 1 if (defined $studentsHash{$username});
 }
 
+#
+# Get the current URL of this script.
+# Used for sending links in emails mostly
+#
 sub my_url {
 	return $url = "http://cgi.cse.unsw.edu.au" . $ENV{"SCRIPT_URL"};
 }
 
+#
 # Send a confirmation email to the person registering
+#
 sub confirmation_email {
 	my $username = shift;
 	my $address = shift;
@@ -1009,7 +1118,9 @@ sub confirmation_email {
 	return $suffix;
 }
 
+#
 # Email snippet by Andrew Taylor
+#
 sub send_email {
 	my $recipient = shift;
 	my $message = shift;
@@ -1027,6 +1138,9 @@ sub send_email {
 	close F;
 }
 
+#
+# Generate some random letters to be sent as tokens to emails
+#
 sub random_letters {
 	my @chars = ("A".."Z", "a".."z");
 	my $string;
@@ -1050,6 +1164,9 @@ sub upload_file {
 	print "Uploaded photo.";
 }
 
+#
+# Update a user's profile photo
+#
 sub upload_profile_photo {
 	my $username = shift;
 	my $file_handle = shift;
@@ -1057,6 +1174,9 @@ sub upload_profile_photo {
 	upload_file($file, $file_handle);
 }
 
+#
+# Add a photo to the user's other photos
+#
 sub upload_other_photo {
 	my $username = shift;
 	my $file_handle = shift;
@@ -1207,7 +1327,10 @@ sub send_message {
 	send_email($to_email, $email);
 }
 
-
+#
+# Display the contents of the hashes.
+# Useful for debugging mostly.
+#
 sub printHashes {
   foreach $key (keys %studentsHash) {
     print $key, " => ", $studentsHash{$key}, "\n";
