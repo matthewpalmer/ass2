@@ -300,7 +300,7 @@ sub page_header {
 #
 sub page_trailer {
 	my $html = "";
-	$html .= join("", map("<!-- $_=".param($_)." -->\n", param())) if $debug;
+	# $html .= join("", map("<!-- $_=".param($_)." -->\n", param())) if $debug;
 
 	$html .= "<script>";
 	$html .= scripts();
@@ -357,7 +357,7 @@ sub sign_up_form {
 sub display_profile {
 	my $username = shift;
 	my $html = full_profile_html($username);
-	print $html;
+	return $html;
 }
 
 #
