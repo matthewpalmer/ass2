@@ -6,14 +6,20 @@
 
 
 ### Structure
-# This code is structured in the following way:
-# 	1. Setup
-# 	2. Determining state
-# 	3. HTML display
-# 	4. Data retrieval
-# 	5. Data updating
+# There are 3 main files to this project:
+# 	1. This file (love2041.cgi)
+# 	2. ProfileImporter, which imports the data about the user's from the text files.
+# 	3. Matchmaker, which decides which users are good matches for eachother.
+#
+# This file is structured in the following way:
+# 	Section 1 — Setup
+# 	Section 2 — Determining state
+# 	Section 3 — HTML display
+# 	Section 4 — Data retrieval
+# 	Section 5 — Data updating
 #
 # You can easily navigate between the sections by search for 'Section X'
+
 
 # Section 1 — Set up
 # ##################
