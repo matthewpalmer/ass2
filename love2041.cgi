@@ -98,13 +98,12 @@ if (param('email')) {
 	my $password = param('password');
 	my $email = param('email');
 
-  print "Signing up $username, $password, $email<br/>\n";
   my ($isValid, $errorMessage) = valid_user($username, $password, $email);
 	if ($isValid) {
 		register($username, $password, $email);
 		print "<strong>Registering $username, $password, $email. Check your emails.</strong>\n";
 	} else {
-		print "Data entered was not valid '$errorMessage'\n";
+		print p("There was an error. $errorMessage.\n");
 		print sign_up_form();
 	}
 } elsif (isLoggedIn()) {
@@ -192,13 +191,15 @@ if (param('email')) {
 		print "Resetting password now...";
 		reset_password(param('reset_username'));
 	} elsif (param('reset')) {
-		print "we have a reset request";
 		my $username = username_for_reset(param('reset'));
 		print reset_html($username);
 	} elsif (param('password_for_reset') && param('username_for_reset')) {
 		print "Saving reset password\n";
 		save_reset_password(param('username_for_reset'), param('password_for_reset'));
 	} else {
+		if (param('username')) {
+			print "<center><p style = 'color:red;'>Incorrect username or password.</p></center>";
+		}
 		# Not logged in. Display the log in page.
 		print log_in_screen();
 	}
@@ -1073,14 +1074,14 @@ sub valid_user {
 #
 sub valid_username {
 	my $username = shift;
-	return 1 if ($username =~ /[A-Za-z0-9_]{1,20}/);
+	return 1 if ($username =~ /^[A-Za-z0-9_]{1,20}$/);
 }
 
 #
 # Passwords have to be 1-128 characters long.
 #
 sub valid_password {
-	return 1 if (shift =~ /.{1,128}/);
+	return 1 if (shift =~ /^.{1,128}$/);
 }
 
 #
@@ -1192,11 +1193,10 @@ sub upload_other_photo {
 
 	# Get the last other photo filename in the directory
 	my $lastFile = $other_photos[@other_photos - 1];
-	print "last file '$lastFile'\n";
+
 	# Photo filenames are of the format photo01.jpg (for example)
 	$lastFile =~ /([0-9]{2})\.jpg$/;
 	my $num = $1 + 1;
-	print "num is '$num'\n";
 
 	my $new_filename = "$students_dir/$username/photo";
 
@@ -1207,7 +1207,7 @@ sub upload_other_photo {
 	}
 
 	$new_filename .= ".jpg";
-	print "fn '$new_filename'\n";
+
 	upload_file($new_filename, $file_handle);
 }
 
@@ -1229,9 +1229,9 @@ sub delete_photo {
 	if (-e $path) {
 		# Delete the file
 		unlink $path;
-		print "Deleted file $path";
+
 	} else {
-		print "didn't delete file $path";
+		print "Sorry, we couldn't delete that photo right now.";
 	}
 }
 
@@ -1273,13 +1273,12 @@ sub delete_user {
 # Reset a user's password
 #
 sub reset_password {
-	print "In the reset subro";
 	my $username = shift;
 	my $email = $studentsHash{$username}{$emailKey};
 	if ($email) {
 		my $random = random_letters();
 		my $url = my_url . "?reset=" . $random;
-		print "Sending you an email...";
+		print p("Sending you an email...");
 		my $message = "Hi $username,\nA request to reset your account for LOVE2041 was made recently.\n" .
 		              "If you'd like to continue with this request, please click this link: $url." .
 		              "\n\n" .
@@ -1315,7 +1314,6 @@ sub username_for_reset {
 sub save_reset_password {
 	my $username = shift;
 	my $password = shift;
-	print "Saving '$username' '$password'\n";
 	update_single_attribute($username, "password", $password);
 }
 

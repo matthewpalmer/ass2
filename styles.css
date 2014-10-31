@@ -62,6 +62,7 @@ img {
   display: inline-block;
 
   line-height: 2.5;
+  height: 2.1em;
   width: 80%;
   border: 1px solid #5E97E7;
   -webkit-border-radius: 4px;
